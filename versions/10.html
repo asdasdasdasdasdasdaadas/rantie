@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Горин · Сторис</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@500;600;700;800;900&display=swap">
+<style>
+/* Вариант «Сторис»: весь сайт — лента крупных карточек, которые листаются пальцем или стрелками.
+   Одна мысль на карточку, огромный шрифт, яркие фиолетовые плоскости. Сделано под телефон, на компьютере видно несколько карточек сразу. */
+:root{
+  --bg:#FFFFFF;--soft:#F4EDFA;--lilac:#E6D4F5;--ink:#170F1E;--muted:#766B80;--line:#ECE4F2;
+  --accent:#8B1FC2;--deep:#4E0F72;--hl:#FFF0A0;
+  --font:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:34px;color-scheme:light;
+}
+@supports (corner-shape: squircle){:root{--r:56px}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:600 17px/1.45 var(--font);display:flex;flex-direction:column;overflow-x:hidden}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.who{display:flex;align-items:center;gap:10px}
+.ring{padding:3px;border-radius:50%;background:conic-gradient(var(--accent),#C77DFF,var(--accent))}
+.ava{width:44px;height:44px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:900;color:var(--accent);border:2px solid #fff}
+.who b{display:block;font-weight:800;line-height:1.1}
+.who small{color:var(--muted);font-size:13px}
+.cta{border:0;background:var(--accent);color:#fff;font-weight:800;padding:12px 18px;border-radius:999px;cursor:pointer;text-decoration:none}
+
+.bars{display:flex;gap:4px;padding:6px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px))}
+.bars button{flex:1;height:5px;border:0;border-radius:999px;background:var(--line);padding:0;cursor:pointer;transition:background .2s}
+.bars button.on{background:var(--accent)}
+.bars button.seen{background:#C9A6E4}
+
+.reel{flex:1;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:4px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));scrollbar-width:none;min-height:560px}
+.reel::-webkit-scrollbar{display:none}
+.st{scroll-snap-align:center;flex:0 0 min(440px,88vw);border-radius:var(--r);corner-shape:squircle;padding:30px 28px;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden;min-height:540px}
+.st .n{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.65}
+.st h2{margin:0;font-weight:900;font-size:clamp(34px,4.2vw,46px);line-height:1;letter-spacing:-.035em;text-wrap:balance}
+.st p{margin:0;font-size:18px;line-height:1.45}
+.st ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.st li{display:flex;gap:12px;align-items:flex-start;font-size:17px}
+.st li::before{content:"";flex-shrink:0;width:24px;height:24px;border-radius:50%;margin-top:1px;background:currentColor;opacity:.16}
+.st .foot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.tag{align-self:flex-start;font-size:13px;font-weight:800;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.18)}
+.big{font-weight:900;font-size:clamp(44px,5.4vw,64px);line-height:.95;letter-spacing:-.04em}
+.fill{background:var(--hl);color:#3A2E00;border-radius:10px;padding:0 .15em}
+.b{border:0;border-radius:22px;corner-shape:squircle;padding:17px 20px;font-weight:800;font-size:16px;cursor:pointer;text-align:center;text-decoration:none}
+
+/* fills */
+.purple{background:var(--accent);color:#fff}
+.purple .b{background:#fff;color:var(--accent)}
+.deep{background:var(--deep);color:#fff}
+.deep .b{background:#fff;color:var(--deep)}
+.lilac{background:var(--lilac);color:var(--deep)}
+.lilac .tag,.soft .tag,.white .tag{background:#fff;color:var(--accent)}
+.lilac .b,.soft .b,.white .b{background:var(--accent);color:#fff}
+.soft{background:var(--soft)}
+.white{background:#fff;border:2px solid var(--line)}
+.mk{display:flex;gap:6px;flex-wrap:wrap}
+.mk span{font-size:13px;font-weight:800;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.2)}
+.lilac .mk span,.soft .mk span,.white .mk span{background:#fff;color:var(--accent)}
+.mk span.no{text-decoration:line-through;opacity:.55}
+
+.blob{position:absolute;right:-60px;bottom:-60px;width:220px;height:220px;border-radius:70px;corner-shape:squircle;background:rgba(255,255,255,.1);transform:rotate(18deg);pointer-events:none}
+@supports (corner-shape: squircle){.blob{border-radius:110px}}
+.qa{display:flex;flex-direction:column;gap:12px}
+.qa div{background:#fff;border-radius:20px;corner-shape:squircle;padding:14px 16px}
+.qa b{display:block;font-size:16px;color:var(--ink)}
+.qa span{display:block;font-size:15px;font-weight:500;color:var(--muted);margin-top:2px}
+.prices{display:flex;flex-direction:column}
+.prices div{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.prices div:last-child{border-bottom:0}
+.prices b{white-space:nowrap}
+.ct{display:flex;justify-content:space-between;align-items:center;gap:8px;background:rgba(255,255,255,.14);border-radius:20px;corner-shape:squircle;padding:12px 12px 12px 16px;flex-wrap:wrap}
+.ct small{display:block;font-size:12px;opacity:.75}
+.ct b{user-select:all}
+.ct button{border:0;background:#fff;color:var(--accent);font-weight:800;font-size:13px;padding:8px 12px;border-radius:999px;cursor:pointer}
+
+.ctrl{display:flex;justify-content:center;align-items:center;gap:14px;padding:0 16px calc(18px + env(safe-area-inset-bottom,0px))}
+.ctrl button{width:52px;height:52px;border-radius:50%;border:2px solid var(--line);background:#fff;cursor:pointer;display:grid;place-items:center;color:var(--accent)}
+.ctrl button:hover{border-color:var(--accent)}
+.ctrl svg{width:22px;height:22px}
+.ctrl span{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:60px;text-align:center}
+.legal{text-align:center;font-size:12px;color:var(--muted);padding:0 16px 16px}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="who"><span class="ring"><span class="ava">КГ</span></span><span><b>Кирилл Горин</b><small>агент по ПВЗ · WB и Ozon</small></span></div>
+  <a class="cta" href="#s9" data-go="8">Написать</a>
+</div>
+<div class="bars" id="bars"></div>
+
+<div class="reel" id="reel">
+  <article class="st purple" id="s1">
+    <span class="n">Привет</span>
+    <h2>Сдам ваше помещение под ПВЗ</h2>
+    <p>Я агент собственников. Договариваюсь с ООО «РВБ» (Wildberries), Ozon и ИП-партнёрами вместо вас.</p>
+    <div class="foot"><span class="tag">удалённо · по всей России</span><button class="b" data-next>Листайте →</button></div>
+    <span class="blob"></span>
+  </article>
+
+  <article class="st lilac" id="s2">
+    <span class="n">Пустое помещение</span>
+    <h2>Откроем пункт выдачи</h2>
+    <ul><li>Бесплатно проверю, подходит ли помещение</li><li>Подам Wildberries как фирменный ПВЗ</li><li>Или найду ИП-партнёра</li><li>Сопровожу договор до подписания</li></ul>
+    <div class="foot"><div class="mk"><span>Фирменный · WB</span><span>Партнёрский · WB и Ozon</span></div><button class="b" data-go="8">Отправить на оценку</button></div>
+  </article>
+
+  <article class="st deep" id="s3">
+    <span class="n">ПВЗ уже работает</span>
+    <h2>Аренда может быть выше</h2>
+    <p>Готовлю обоснование по рынку, индексации и состоянию помещения и веду переговоры. Без ультиматумов и риска потерять арендатора.</p>
+    <div class="foot"><div class="mk"><span>WB</span><span>Ozon</span></div><button class="b" data-go="8">Проверить мою ставку</button></div>
+    <span class="blob"></span>
+  </article>
+
+  <article class="st soft" id="s4">
+    <span class="n">Рутина</span>
+    <h2>Счётчики и претензии — на мне</h2>
+    <ul><li>Каждый месяц собираю и передаю показания</li><li>Отвечаю на претензии арендатора</li><li>Составляю ваши претензии</li><li>Консультирую по договору</li></ul>
+    <div class="foot"><span class="tag">ежемесячное сопровождение</span></div>
+  </article>
+
+  <article class="st white" id="s5">
+    <span class="n">Закрыть ПВЗ</span>
+    <h2>Без долгов и споров</h2>
+    <ul><li>Проверю сроки и условия расторжения</li><li>Проведу переписку с арендатором</li><li>Приму помещение по акту, сверю расчёты</li><li>Найду нового арендатора, если нужно</li></ul>
+    <div class="foot"><button class="b" data-go="8">Обсудить закрытие</button></div>
+  </article>
+
+  <article class="st purple" id="s6">
+    <span class="n">Продажа</span>
+    <h2>Продадим как готовый бизнес</h2>
+    <p>Помещение с арендатором стоит дороже пустых метров. Посчитаю окупаемость, проверю договор, найду покупателя.</p>
+    <div class="foot"><div class="mk"><span>С действующим ПВЗ</span><span>Под ПВЗ</span></div><button class="b" data-go="8">Обсудить продажу</button></div>
+    <span class="blob"></span>
+  </article>
+
+  <article class="st lilac" id="s7">
+    <span class="n">Вопросы</span>
+    <h2>Зачем агент?</h2>
+    <div class="qa">
+      <div><b>Сам договорюсь</b><span>Можно. Но я знаю, что двигается в типовом договоре и какие ставки по рынку.</span></div>
+      <div><b>Арендатор и так платит</b><span>Плата за результат: нет прибавки — нет оплаты.</span></div>
+      <div><b>Удалённо несерьёзно</b><span>Официально, ИП, агентский договор, чеки и акты.</span></div>
+    </div>
+  </article>
+
+  <article class="st white" id="s8">
+    <span class="n">Цены</span>
+    <h2>Платите за результат</h2>
+    <div class="prices">
+      <div><span>Оценка помещения</span><b>бесплатно</b></div>
+      <div><span>Открытие ПВЗ</span><b><span class="fill">XX%</span> аренды</b></div>
+      <div><span>Повышение аренды</span><b><span class="fill">XX%</span> прибавки</b></div>
+      <div><span>Счётчики</span><b>от <span class="fill">X XXX ₽</span>/мес</b></div>
+      <div><span>Претензия</span><b>от <span class="fill">X XXX ₽</span></b></div>
+      <div><span>Закрытие</span><b>от <span class="fill">XX XXX ₽</span></b></div>
+      <div><span>Продажа</span><b><span class="fill">X%</span> сделки</b></div>
+    </div>
+  </article>
+
+  <article class="st deep" id="s9">
+    <span class="n">Связаться</span>
+    <h2>Пришлите адрес и задачу</h2>
+    <p style="opacity:.85">Встречаемся, только если иначе никак.</p>
+    <div class="foot">
+      <div class="ct"><span><small>Telegram</small><b id="k1">@username</b></span><button data-c="k1">Копировать</button></div>
+      <div class="ct"><span><small>Телефон</small><b id="k2">+7 900 000-00-00</b></span><button data-c="k2">Копировать</button></div>
+      <div class="ct"><span><small>Почта</small><b id="k3">mail@example.ru</b></span><button data-c="k3">Копировать</button></div>
+    </div>
+    <span class="blob"></span>
+  </article>
+</div>
+
+<div class="ctrl">
+  <button type="button" id="prev" aria-label="Назад"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+  <span id="cnt">1 / 9</span>
+  <button type="button" id="next" aria-label="Дальше"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+</div>
+<p class="legal">© 2026 ИП Горин Кирилл Николаевич · ИНН 000000000000 · Не являюсь представителем Wildberries или Ozon</p>
+
+<script>
+(function(){
+  var reel=document.getElementById('reel'),cards=[].slice.call(reel.children),bars=document.getElementById('bars'),cnt=document.getElementById('cnt'),cur=0;
+  cards.forEach(function(c,i){var b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Карточка '+(i+1));b.onclick=function(){go(i);};bars.appendChild(b);});
+  var bb=[].slice.call(bars.children);
+  function go(i){i=Math.max(0,Math.min(cards.length-1,i));var c=cards[i];reel.scrollTo({left:c.offsetLeft-(reel.clientWidth-c.clientWidth)/2});}
+  function mark(){
+    var mid=reel.scrollLeft+reel.clientWidth/2,best=0,d=1e9;
+    cards.forEach(function(c,i){var cm=c.offsetLeft+c.clientWidth/2,dd=Math.abs(cm-mid);if(dd<d){d=dd;best=i;}});
+    if(reel.scrollLeft<4)best=0;
+    else if(reel.scrollLeft+reel.clientWidth>=reel.scrollWidth-4)best=cards.length-1;
+    cur=best;cnt.textContent=(cur+1)+' / '+cards.length;
+    bb.forEach(function(b,i){b.className=i===cur?'on':(i<cur?'seen':'');});
+  }
+  reel.addEventListener('scroll',function(){requestAnimationFrame(mark);},{passive:true});
+  document.getElementById('prev').onclick=function(){go(cur-1);};
+  document.getElementById('next').onclick=function(){go(cur+1);};
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1);});
+  document.addEventListener('click',function(e){
+    var n=e.target.closest('[data-next]');if(n){go(cur+1);}
+    var g=e.target.closest('[data-go]');if(g){e.preventDefault();go(+g.dataset.go);}
+  });
+  document.querySelectorAll('.ct button').forEach(function(b){b.onclick=function(){var t=document.getElementById(b.dataset.c).textContent;try{navigator.clipboard.writeText(t).then(function(){b.textContent='Скопировано';setTimeout(function(){b.textContent='Копировать';},1500);});}catch(e){}};});
+  mark();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Горин · Журнал собственника</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600;7..72,800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Вариант «Журнал»: длинное чтение для тех, кто принимает решение не спеша.
+   Крупная антиква, оглавление слева, главы, интервью-формат для возражений, прейскурант как в ведомости. */
+:root{
+  --bg:#FFFFFF;--soft:#F7F2FB;--ink:#16101C;--muted:#6F6578;--line:#E9E2EF;
+  --accent:#7E1BB3;--accent-soft:#EFE2F8;--hl:#FFF0A0;
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:20px;color-scheme:light;
+}
+@supports (corner-shape: squircle){:root{--r:32px}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 18px/1.7 var(--sans)}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+.mast{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:22px;border-bottom:1px solid var(--line);font-size:14px;font-weight:600;color:var(--muted)}
+.mast b{font-family:var(--serif);font-size:20px;color:var(--ink);font-weight:800}
+.mast a{text-decoration:none;background:var(--accent);color:#fff;padding:10px 18px;border-radius:999px}
+
+.cover{padding-block:72px 56px;display:grid;grid-template-columns:1fr 300px;gap:56px;align-items:end;border-bottom:1px solid var(--line)}
+.cover .issue{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.cover h1{font-family:var(--serif);font-weight:800;font-size:clamp(44px,7.4vw,96px);line-height:.98;letter-spacing:-.025em;margin:18px 0 0;text-wrap:balance}
+.cover h1 i{font-weight:400;color:var(--accent)}
+.cover .dek{font-family:var(--serif);font-size:22px;line-height:1.5;color:var(--muted);margin-top:26px;max-width:30em}
+.byline{background:var(--soft);border-radius:var(--r);corner-shape:squircle;padding:24px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.5}
+.byline .av{width:64px;height:64px;border-radius:22px;corner-shape:squircle;background:var(--accent);color:#fff;font-family:var(--serif);font-weight:800;font-size:24px;display:grid;place-items:center}
+@supports (corner-shape: squircle){.byline .av{border-radius:32px}}
+.byline b{font-size:17px}
+.byline span{color:var(--muted)}
+@media (max-width:860px){.cover{grid-template-columns:1fr;gap:32px;padding-block:48px 40px}}
+
+.body{display:grid;grid-template-columns:220px minmax(0,1fr);gap:64px;padding-block:56px 80px}
+.toc{position:sticky;top:24px;align-self:start;font-size:15px}
+.toc b{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;counter-reset:t}
+.toc a{counter-increment:t;display:flex;gap:10px;text-decoration:none;color:var(--muted);padding:8px 12px;border-radius:12px;font-weight:500;transition:background .15s,color .15s}
+.toc a::before{content:counter(t,upper-roman);font-family:var(--serif);font-weight:600;color:var(--accent);min-width:24px}
+.toc a:hover,.toc a.on{background:var(--soft);color:var(--ink)}
+@media (max-width:900px){.body{grid-template-columns:1fr;gap:24px}.toc{position:static}.toc ol{flex-direction:row;flex-wrap:wrap}.toc a{background:var(--soft)}}
+
+article{max-width:720px}
+.ch{padding-bottom:64px;margin-bottom:64px;border-bottom:1px solid var(--line)}
+.ch:last-child{border-bottom:0;margin-bottom:0}
+.ch .num{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--accent);letter-spacing:.06em}
+.ch h2{font-family:var(--serif);font-weight:800;font-size:clamp(32px,4.4vw,48px);line-height:1.08;letter-spacing:-.02em;margin:10px 0 24px;text-wrap:balance}
+.ch p{margin:0 0 18px}
+.ch p.first::first-letter{font-family:var(--serif);font-weight:800;float:left;font-size:4.4em;line-height:.85;padding:6px 12px 0 0;color:var(--accent)}
+.pull{margin:32px 0;padding:28px 32px;background:var(--soft);border-radius:var(--r);corner-shape:squircle;font-family:var(--serif);font-size:26px;line-height:1.35;font-weight:600}
+.pull small{display:block;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--muted);margin-top:12px}
+
+.svc{display:flex;flex-direction:column;gap:0;margin-top:8px}
+.svc div{display:grid;grid-template-columns:1fr auto;gap:16px;padding:18px 0;border-top:1px solid var(--line)}
+.svc div:last-child{border-bottom:1px solid var(--line)}
+.svc h3{font-family:var(--serif);font-size:22px;font-weight:600;margin:0;line-height:1.3}
+.svc p{margin:4px 0 0;color:var(--muted);font-size:16px;line-height:1.55}
+.mk{display:flex;gap:6px;align-items:flex-start}
+.mk span{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.mk span.no{background:transparent;color:#B9AEC3;border:1px dashed var(--line);text-decoration:line-through}
+
+.qa{margin-top:8px}
+.qa dt{font-family:var(--serif);font-weight:800;font-size:22px;line-height:1.35;margin-top:28px;display:flex;gap:14px}
+.qa dt::before{content:"—";color:var(--accent)}
+.qa dd{margin:10px 0 0 34px;color:var(--ink)}
+
+.ledger{width:100%;border-collapse:collapse;font-size:16px;margin-top:8px}
+.ledger td{padding:16px 0;border-bottom:1px solid var(--line);vertical-align:baseline}
+.ledger td:first-child{padding-right:12px}
+.ledger td.dots{width:100%;background:radial-gradient(circle,var(--line) 1.2px,transparent 1.4px) 0 70%/8px 8px repeat-x}
+.ledger td.v{white-space:nowrap;text-align:right;font-weight:700;padding-left:12px;font-variant-numeric:tabular-nums}
+.ledger small{display:block;color:var(--muted);font-size:14px}
+.fill{background:var(--hl);color:#3A2E00;border-radius:5px;padding:0 .2em}
+@media (max-width:560px){.ledger td.dots{display:none}.ledger td.v{white-space:normal}}
+
+.steps{list-style:none;margin:8px 0 0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:56px 1fr;gap:16px;padding:14px 0}
+.steps li::before{content:counter(s);font-family:var(--serif);font-weight:800;font-size:34px;line-height:1;color:var(--accent)}
+.steps b{display:block}
+.steps span{color:var(--muted);font-size:16px}
+
+.end{background:var(--accent);color:#fff;border-radius:calc(var(--r) + 8px);corner-shape:squircle;padding:clamp(28px,5vw,56px);margin-top:16px}
+.end h2{color:#fff;margin-top:0}
+.end p{opacity:.88}
+.cts{display:flex;flex-direction:column;gap:8px;margin-top:24px}
+.cts div{display:flex;justify-content:space-between;align-items:center;gap:12px;background:rgba(255,255,255,.12);border-radius:18px;corner-shape:squircle;padding:12px 12px 12px 18px;flex-wrap:wrap}
+.cts small{display:block;opacity:.7;font-size:13px}
+.cts b{user-select:all}
+.cts button{border:0;background:#fff;color:var(--accent);font:700 14px var(--sans);padding:10px 14px;border-radius:999px;cursor:pointer}
+footer{border-top:1px solid var(--line);padding-block:28px 48px;color:var(--muted);font-size:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast"><b>Горин</b><span>Агент собственников помещений под ПВЗ</span><a href="#contacts">Написать</a></header>
+
+  <section class="cover">
+    <div>
+      <span class="issue">Для собственников · Wildberries и Ozon</span>
+      <h1>Ваше помещение <i>и&nbsp;маркетплейс:</i> как договориться выгодно</h1>
+      <p class="dek">Кто я, что делаю для собственников пунктов выдачи, сколько это стоит и почему со мной обычно выходит больше, чем в одиночку.</p>
+    </div>
+    <div class="byline">
+      <span class="av">КГ</span>
+      <b>Кирилл Николаевич Горин</b>
+      <span>ИП, агент собственников. Работаю удалённо по всей России.</span>
+    </div>
+  </section>
+
+  <div class="body">
+    <nav class="toc" id="toc">
+      <b>Содержание</b>
+      <ol>
+        <li><a href="#c1">Кто я</a></li>
+        <li><a href="#c2">Что я делаю</a></li>
+        <li><a href="#c3">Продажа бизнеса</a></li>
+        <li><a href="#c4">Частые сомнения</a></li>
+        <li><a href="#c5">Цены</a></li>
+        <li><a href="#c6">Как работаем</a></li>
+        <li><a href="#contacts">Связаться</a></li>
+      </ol>
+    </nav>
+
+    <article>
+      <section class="ch" id="c1">
+        <span class="num">Глава I</span>
+        <h2>Агент на стороне собственника</h2>
+        <p class="first">Я представляю интересы владельцев помещений перед арендаторами: ООО «РВБ» (Wildberries), Ozon и индивидуальными предпринимателями, которые открывают партнёрские пункты выдачи. Работаю с новыми помещениями и с теми, где ПВЗ уже работает.</p>
+        <p>У арендатора типовой договор, юристы и сотни таких же помещений. У собственника, как правило, одно. Моя задача — выровнять эти силы: знать, что можно изменить, сколько сейчас платят за похожие объекты и как подать заявку, чтобы её не отложили.</p>
+        <div class="pull">Встречаемся лично, только если иначе никак. Всё остальное — переписка, звонки и электронные документы.<small>Поэтому работаю с собственниками из любого города</small></div>
+      </section>
+
+      <section class="ch" id="c2">
+        <span class="num">Глава II</span>
+        <h2>Что я делаю</h2>
+        <p>С Ozon всё то же самое, что с Wildberries, кроме фирменных пунктов: у Ozon работают партнёрские.</p>
+        <div class="svc">
+          <div><div><h3>Открытие фирменного ПВЗ</h3><p>Подаю помещение Wildberries, сопровождаю согласование и подписание договора.</p></div><div class="mk"><span>WB</span><span class="no">Ozon</span></div></div>
+          <div><div><h3>Открытие партнёрского ПВЗ</h3><p>Нахожу ИП, который откроет пункт выдачи в вашем помещении.</p></div><div class="mk"><span>WB</span><span>Ozon</span></div></div>
+          <div><div><h3>Предварительная оценка</h3><p>По фото, плану и адресу отвечаю коротко: подходит или нет.</p></div><div class="mk"><span>WB</span><span>Ozon</span></div></div>
+          <div><div><h3>Повышение аренды</h3><p>Обоснование по рынку, индексации и состоянию помещения, переговоры с арендатором.</p></div><div class="mk"><span>WB</span><span>Ozon</span></div></div>
+          <div><div><h3>Показания счётчиков</h3><p>Каждый месяц собираю и передаю арендатору, слежу за начислениями.</p></div><div class="mk"><span>WB</span><span>Ozon</span></div></div>
+          <div><div><h3>Претензии и консультации</h3><p>Отвечаю на претензии арендатора, составляю ваши, разбираю договор.</p></div><div class="mk"><span>WB</span><span>Ozon</span></div></div>
+          <div><div><h3>Закрытие ПВЗ</h3><p>Расторжение, акт возврата помещения, сверка взаиморасчётов.</p></div><div class="mk"><span>WB</span><span>Ozon</span></div></div>
+        </div>
+      </section>
+
+      <section class="ch" id="c3">
+        <span class="num">Глава III</span>
+        <h2>Продажа арендного бизнеса</h2>
+        <p>Помещение с арендатором продаётся как готовый доход, и покупатель смотрит на окупаемость, а не на квадратные метры. Я помогаю продать его именно так.</p>
+        <p><b>С действующим ПВЗ</b> — считаю окупаемость по текущей ставке, проверяю договор аренды для покупателя, ищу покупателя и веду сделку до переоформления.</p>
+        <p><b>Под ПВЗ</b> — подтверждаю, что помещение подходит под пункт выдачи, показываю ожидаемую аренду и при желании нахожу арендатора до или после продажи.</p>
+      </section>
+
+      <section class="ch" id="c4">
+        <span class="num">Глава IV</span>
+        <h2>Частые сомнения и прямые ответы</h2>
+        <dl class="qa">
+          <dt>Я и сам могу договориться с Wildberries.</dt>
+          <dd>Можете. Вопрос в том, на каких условиях. Я знаю, какие пункты типового договора обычно удаётся изменить и какие ставки сейчас по похожим объектам.</dd>
+          <dt>Арендатор и так платит. Зачем мне агент?</dt>
+          <dd>Моё вознаграждение привязано к результату. Не подняли ставку и не открыли ПВЗ — вы не платите. Обычно прибавка за год перекрывает мою работу в несколько раз.</dd>
+          <dt>Боюсь, что после повышения арендатор съедет.</dt>
+          <dd>Повышение идёт с обоснованием, а не ультиматумом. Если риск выше выгоды, я скажу прямо и предложу оставить как есть.</dd>
+          <dt>Удалённо — это несерьёзно.</dt>
+          <dd>Маркетплейсы сами работают с собственниками через личные кабинеты и электронный документооборот. Я работаю официально, как ИП, по агентскому договору, с чеками и актами.</dd>
+          <dt>Счётчики и претензии — мелочь.</dt>
+          <dd>Пока не пропущен срок. Неподанные показания и неотвеченная претензия превращаются в недоплату или штраф.</dd>
+        </dl>
+      </section>
+
+      <section class="ch" id="c5">
+        <span class="num">Глава V</span>
+        <h2>Цены</h2>
+        <p>Разовые услуги — по результату, сопровождение — помесячно. Сумма фиксируется в агентском договоре до начала работы.</p>
+        <table class="ledger">
+          <tr><td>Оценка помещения</td><td class="dots"></td><td class="v">бесплатно</td></tr>
+          <tr><td>Открытие ПВЗ<small>после подписания договора</small></td><td class="dots"></td><td class="v"><span class="fill">XX%</span> месячной аренды</td></tr>
+          <tr><td>Повышение аренды<small>от прибавки за первый год</small></td><td class="dots"></td><td class="v"><span class="fill">XX%</span></td></tr>
+          <tr><td>Показания счётчиков</td><td class="dots"></td><td class="v">от <span class="fill">X XXX ₽</span>/мес</td></tr>
+          <tr><td>Претензия или консультация</td><td class="dots"></td><td class="v">от <span class="fill">X XXX ₽</span></td></tr>
+          <tr><td>Закрытие ПВЗ</td><td class="dots"></td><td class="v">от <span class="fill">XX XXX ₽</span></td></tr>
+          <tr><td>Продажа арендного бизнеса<small>только при успешной сделке</small></td><td class="dots"></td><td class="v"><span class="fill">X%</span> от сделки</td></tr>
+        </table>
+      </section>
+
+      <section class="ch" id="c6">
+        <span class="num">Глава VI</span>
+        <h2>Как идёт работа</h2>
+        <ol class="steps">
+          <li><div><b>Заявка</b><span>Адрес и задача: открыть, поднять аренду, закрыть, продать.</span></div></li>
+          <li><div><b>Фото и документы</b><span>Фото, план БТИ, выписка ЕГРН, для действующего ПВЗ — договор.</span></div></li>
+          <li><div><b>Ответ и цена</b><span>Говорю, есть ли шанс, сколько стоит и сколько займёт.</span></div></li>
+          <li><div><b>Агентский договор</b><span>Подписываем дистанционно.</span></div></li>
+          <li><div><b>Переговоры и сопровождение</b><span>Общаюсь с арендатором и держу вас в курсе.</span></div></li>
+        </ol>
+      </section>
+
+      <section class="end" id="contacts">
+        <h2 style="font-family:var(--serif);font-size:clamp(30px,4vw,44px);line-height:1.1;margin:0 0 14px">Пришлите адрес и задачу</h2>
+        <p>Отвечу, подходит ли помещение и чем могу помочь. Первая консультация бесплатно.</p>
+        <div class="cts">
+          <div><span><small>Telegram</small><b id="k1">@username</b></span><button data-c="k1">Копировать</button></div>
+          <div><span><small>Телефон</small><b id="k2">+7 900 000-00-00</b></span><button data-c="k2">Копировать</button></div>
+          <div><span><small>Почта</small><b id="k3">mail@example.ru</b></span><button data-c="k3">Копировать</button></div>
+        </div>
+      </section>
+    </article>
+  </div>
+
+  <footer><span>© 2026 ИП Горин Кирилл Николаевич · ИНН 000000000000</span><span>Не являюсь представителем Wildberries или Ozon.</span></footer>
+</div>
+<script>
+document.querySelectorAll('.cts button').forEach(function(b){b.onclick=function(){var t=document.getElementById(b.dataset.c).textContent;try{navigator.clipboard.writeText(t).then(function(){b.textContent='Скопировано';setTimeout(function(){b.textContent='Копировать';},1500);});}catch(e){}};});
+(function(){var links=[].slice.call(document.querySelectorAll('#toc a'));function f(){var cur=null;links.forEach(function(a){var el=document.querySelector(a.getAttribute('href'));if(el&&el.getBoundingClientRect().top<160)cur=a;});links.forEach(function(a){a.classList.toggle('on',a===cur);});}addEventListener('scroll',f,{passive:true});f();})();
+</script>
+</body>
+</html>

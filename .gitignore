@@ -1,0 +1,8 @@
+admin.json
+data/settings.json
+uploads/*
+!uploads/.gitkeep
+.claude/
+__pycache__/
+*.tmp
+.DS_Store

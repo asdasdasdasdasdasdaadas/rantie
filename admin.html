@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>РАНТЬЕ · Админка</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--ink:#111113;--muted:#6B6B72;--line:#E6E6E9;--tint:#F4F4F5;--tint-2:#E8E8EA;--bg:#fff;--wb:#8B1FC2;--oz:#1F5BFF;--ok:#16733F;--bad:#C0362C;
+  --font:"Onest",system-ui,-apple-system,sans-serif;--r-s:14px;--r-m:22px;--pill:999px}
+@supports (corner-shape: squircle){:root{--r-s:20px;--r-m:32px}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--tint);color:var(--ink);font:400 16px/1.5 var(--font);min-height:100dvh}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.025em;line-height:1.1}
+[hidden]{display:none!important}
+.wrap{max-width:880px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left)) 120px}
+.mark{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:12px;corner-shape:squircle;background:var(--ink);color:#fff;font-weight:800;font-size:18px;flex-shrink:0}
+.mark svg{width:66%;height:66%;display:block}
+@supports (corner-shape: squircle){.mark{border-radius:18px}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:15px;padding:13px 18px;border-radius:var(--r-s);corner-shape:squircle;border:0;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .15s,transform .15s}
+.btn:active{transform:scale(.98)}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-soft{background:var(--tint);color:var(--ink)}
+.btn-soft:hover{background:var(--tint-2)}
+.btn-white{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-danger{background:#FDECEC;color:var(--bad)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+/* вход */
+.login{min-height:100dvh;display:grid;place-items:center;padding:16px}
+.login form{width:min(380px,100%);background:#fff;border-radius:var(--r-m);corner-shape:squircle;padding:32px 28px;display:flex;flex-direction:column;gap:16px;box-shadow:0 30px 60px -40px rgba(0,0,0,.4)}
+.login .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2em;font-size:15px}
+.login p{margin:0;color:var(--muted)}
+.err{color:var(--bad);font-size:14px;min-height:1.2em;margin:-6px 0 0}
+
+/* шапка */
+.top{position:sticky;top:0;z-index:5;background:rgba(244,244,245,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin:0 -16px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:12px}
+.top .ttl{flex:1;min-width:0;display:flex;flex-direction:column}
+.top .ttl b{font-weight:800;letter-spacing:.18em;font-size:14px}
+.top .ttl span{font-size:13px;color:var(--muted)}
+.top .btn{padding:11px 14px}
+.hello{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:18px 0 16px}
+.hello h1{font-size:clamp(28px,6vw,40px)}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 14px;padding:0 16px}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex-shrink:0;border:0;background:#fff;border-radius:var(--pill);padding:9px 14px;font-weight:600;font-size:14px;color:var(--muted);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.tabs i{font-style:normal;opacity:.6;margin-left:4px}
+
+/* список */
+.list{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:14px;background:#fff;border:0;border-radius:var(--r-s);corner-shape:squircle;padding:10px 14px 10px 10px;cursor:pointer;text-align:left;width:100%;transition:transform .15s,box-shadow .15s}
+.row:hover{box-shadow:0 10px 24px -18px rgba(0,0,0,.4)}
+.thumb{width:72px;height:56px;border-radius:12px;background:var(--tint) center/cover no-repeat;flex-shrink:0;display:grid;place-items:center;color:#B4B4BA}
+.thumb svg{width:26px;height:26px}
+.row .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.row .info b{font-size:17px;letter-spacing:-.02em}
+.row .info span{color:var(--muted);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{font-size:12px;font-weight:700;padding:5px 10px;border-radius:var(--pill);white-space:nowrap;flex-shrink:0}
+.chip.sale{background:#E6F6EC;color:var(--ok)}
+.chip.sold{background:var(--ink);color:#fff}
+.chip.hidden{background:var(--tint-2);color:var(--muted)}
+.chip.example{background:#FFF3D6;color:#7A5600}
+.nav{margin:14px 0 4px;background:#fff}
+.seg.nav button[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:none}
+.note{color:var(--muted);font-size:14px;margin:4px 4px 14px}
+.empty{background:#fff;border-radius:var(--r-m);corner-shape:squircle;padding:40px 24px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+
+/* форма */
+.sheet{position:fixed;inset:0;z-index:20;background:var(--tint);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sheet .wrap{padding-bottom:140px}
+.card{background:#fff;border-radius:var(--r-m);corner-shape:squircle;padding:22px;display:flex;flex-direction:column;gap:16px;margin-bottom:12px}
+.card h3{font-size:17px}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f>span{font-size:14px;font-weight:600}
+.f small{color:var(--muted);font-size:13px}
+.f input,.f textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;background:#fff;outline:none;font-size:16px;transition:border-color .15s}
+.f input:focus,.f textarea:focus{border-color:var(--ink)}
+.f textarea{min-height:120px;resize:vertical;line-height:1.5}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.unit{position:relative}
+.unit input{padding-right:44px}
+.unit input[data-kind]{padding-right:96px}
+.unit em{position:absolute;right:14px;font-size:14px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--muted);pointer-events:none}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;background:var(--tint);padding:4px;border-radius:14px}
+.seg button{min-width:0;overflow:hidden;text-overflow:ellipsis;border:0;background:transparent;border-radius:10px;padding:11px 12px;font-weight:600;font-size:14px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.seg .wb[aria-pressed="true"]{color:var(--wb)}
+.seg .oz[aria-pressed="true"]{color:var(--oz)}
+.calc{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.calc div{background:var(--tint);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column}
+.calc b{font-size:15px}
+.calc span{font-size:12px;color:var(--muted)}
+
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.ph{position:relative;aspect-ratio:4/3;border-radius:12px;background:var(--tint) center/cover no-repeat;overflow:hidden}
+.ph .cover{position:absolute;left:6px;bottom:6px;font-size:11px;font-weight:700;background:var(--ink);color:#fff;border-radius:var(--pill);padding:3px 8px}
+.ph .pb{position:absolute;top:6px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.92);display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.ph .pb svg{width:14px;height:14px}
+.ph .del{right:6px}
+.ph .star{right:42px}
+.add{aspect-ratio:4/3;border-radius:12px;border:1.5px dashed #C9C9CF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;background:#fff}
+.add:hover{border-color:var(--ink);color:var(--ink)}
+.add svg{width:22px;height:22px}
+
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:25;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.bar .in{max-width:880px;margin:0 auto;display:flex;gap:8px}
+.bar .btn-dark{flex:1}
+
+.toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);opacity:0;z-index:40;background:var(--ink);color:#fff;border-radius:var(--pill);padding:12px 18px;font-weight:600;font-size:14px;transition:.25s;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.bad{background:var(--bad)}
+
+
+.row .info .st{display:none}
+@media (max-width:560px){
+  .two{grid-template-columns:1fr}
+  .seg[data-k=status]{grid-auto-flow:row;grid-template-columns:1fr 1fr}
+  .seg button{padding:11px 6px}
+  .top .hide-s{display:none}
+  .row .chip{display:none}
+  .row .info .st{display:inline}
+  .card{padding:18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ВХОД -->
+<div class="login" id="vLogin" hidden>
+  <form id="fLogin">
+    <div class="brand"><span class="mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 40V9h9.5a9.5 9.5 0 0 1 0 19H16" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="37" r="4" fill="#3DBE7A"/></svg></span>РАНТЬЕ</div>
+    <h1 style="font-size:26px">Вход в админку</h1>
+    <p>Здесь вы добавляете и снимаете объекты с продажи.</p>
+    <label class="f"><span>Пароль</span><input type="password" id="pw" autocomplete="current-password" required></label>
+    <p class="err" id="lErr"></p>
+    <button class="btn btn-dark" type="submit">Войти</button>
+  </form>
+</div>
+
+<!-- СПИСОК -->
+<div id="vList" hidden>
+  <div class="wrap">
+    <div class="top">
+      <span class="mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 40V9h9.5a9.5 9.5 0 0 1 0 19H16" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="37" r="4" fill="#3DBE7A"/></svg></span>
+      <div class="ttl"><b>РАНТЬЕ</b><span>Админка объектов</span></div>
+      <a class="btn btn-white hide-s" href="listings.html" target="_blank">Открыть сайт ↗</a>
+      <button class="btn btn-soft" type="button" id="bOut">Выйти</button>
+    </div>
+    <div class="nav seg" id="nav">
+      <button type="button" data-v="objects" aria-pressed="true">Объекты</button>
+      <button type="button" data-v="settings" aria-pressed="false">Контакты и цены</button>
+    </div>
+    <div id="pObjects">
+      <div class="hello">
+        <h1>Объекты</h1>
+        <button class="btn btn-dark" type="button" id="bAdd">+ Добавить объект</button>
+      </div>
+      <div class="tabs" id="tabs"></div>
+      <div class="list" id="list"></div>
+    </div>
+    <form id="pSettings" hidden>
+      <div class="hello"><h1>Контакты</h1></div>
+      <div class="card">
+        <h3>Как вас подписать</h3>
+        <div class="two">
+          <label class="f"><span>Имя</span><input name="name" maxlength="200" placeholder="Кирилл Горин"></label>
+          <label class="f"><span>Подпись</span><input name="role" maxlength="200" placeholder="Агент собственников коммерческих помещений"></label>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Связь</h3>
+        <div class="two">
+          <label class="f"><span>Telegram</span><input name="tg" maxlength="200" placeholder="@username" autocapitalize="off"></label>
+          <label class="f"><span>Телефон</span><input name="phone" maxlength="200" inputmode="tel" placeholder="+7 900 000-00-00"></label>
+        </div>
+        <div class="two">
+          <label class="f"><span>Почта</span><input name="email" maxlength="200" inputmode="email" autocapitalize="off" placeholder="mail@example.ru"></label>
+          <label class="f"><span>Сайт</span><input name="site" maxlength="200" autocapitalize="off" placeholder="rantie.ru"><small>Покажется в PDF. Можно оставить пустым.</small></label>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Реквизиты</h3>
+        <div class="two">
+          <label class="f"><span>ИП или компания</span><input name="company" maxlength="200" placeholder="ИП Горин Кирилл Николаевич"></label>
+          <label class="f"><span>ИНН</span><input name="inn" maxlength="200" inputmode="numeric" placeholder="000000000000"></label>
+        </div>
+      </div>
+      <div class="card" id="prices">
+        <h3>Цены на сайте</h3>
+        <small style="color:var(--muted);font-size:13px;margin-top:-8px">Проценты — числом, например 50. Суммы — числом без «от» и «₽», например 15000. Можно написать и текстом.</small>
+        <label class="f"><span>Полное ведение</span><span class="unit"><input name="price_full" data-kind="rub" maxlength="40" placeholder="10 000"><em>от … ₽ / мес</em></span></label>
+        <div class="two">
+          <label class="f"><span>Открытие ПВЗ</span><span class="unit"><input name="price_open" data-kind="pct" maxlength="40" placeholder="50"><em>% аренды</em></span></label>
+          <label class="f"><span>Повышение аренды</span><span class="unit"><input name="price_rent" data-kind="pct" maxlength="40" placeholder="30"><em>% прибавки</em></span></label>
+        </div>
+        <div class="two">
+          <label class="f"><span>Продажа бизнеса</span><span class="unit"><input name="price_sale" data-kind="pct" maxlength="40" placeholder="3"><em>% сделки</em></span></label>
+          <label class="f"><span>Закрытие ПВЗ</span><span class="unit"><input name="price_close" data-kind="rub" maxlength="40" placeholder="15 000"><em>от … ₽</em></span></label>
+        </div>
+        <div class="two">
+          <label class="f"><span>Претензии и консультации</span><span class="unit"><input name="price_claim" data-kind="rub" maxlength="40" placeholder="3 000"><em>от … ₽</em></span></label>
+          <label class="f"><span>Показания счётчиков</span><span class="unit"><input name="price_meter" data-kind="rub" maxlength="40" placeholder="1 000"><em>₽ / мес</em></span></label>
+        </div>
+      </div>
+      <p class="note">Изменения сразу появятся на сайте: блок «Контакты», шапка, подвал, блок «Сколько стоит», а контакты — ещё и в PDF-презентациях объектов.</p>
+      <button class="btn btn-dark" type="submit" id="bSet" style="width:100%">Сохранить</button>
+    </form>
+  </div>
+</div>
+
+<!-- ФОРМА -->
+<div class="sheet" id="vEdit" hidden>
+  <div class="wrap">
+    <div class="top">
+      <button class="btn btn-soft" type="button" data-back>← Назад</button>
+      <div class="ttl" style="text-align:center"><b id="eTitle" style="letter-spacing:0;font-size:16px">Новый объект</b></div>
+      <span style="width:84px" class="hide-s"></span>
+    </div>
+
+    <div class="card">
+      <h3>Статус</h3>
+      <div class="seg" data-k="status">
+        <button type="button" data-v="sale">В продаже</button>
+        <button type="button" data-v="sold">Продано</button>
+        <button type="button" data-v="hidden">Скрыт</button>
+        <button type="button" data-v="example">Пример</button>
+      </div>
+      <small style="color:var(--muted);font-size:13px;margin-top:-6px" id="stHint"></small>
+    </div>
+
+    <div class="card">
+      <h3>Что продаём</h3>
+      <div class="seg" data-k="type">
+        <button type="button" data-v="pvz">С работающим ПВЗ</button>
+        <button type="button" data-v="empty">Пустое, под ПВЗ</button>
+      </div>
+      <div class="f" id="tenantBox"><span>Кто арендатор</span>
+        <div class="seg" data-k="tenant">
+          <button type="button" data-v="wb" class="wb">Wildberries</button>
+          <button type="button" data-v="oz" class="oz">Ozon</button>
+          <button type="button" data-v="partner">Партнёр</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Где и какое</h3>
+      <div class="two">
+        <label class="f"><span>Город</span><input data-k="city" maxlength="200" placeholder="Казань"></label>
+        <label class="f"><span>Адрес или район</span><input data-k="addr" maxlength="200" placeholder="Ново-Савиновский, ул. Чистопольская"></label>
+      </div>
+      <div class="two">
+        <label class="f"><span>Площадь</span><span class="unit"><input data-k="area" inputmode="decimal" placeholder="52"><em>м²</em></span></label>
+        <label class="f"><span>Этаж и вход</span><input data-k="floor" maxlength="200" placeholder="1 этаж, отдельный вход"></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Деньги</h3>
+      <div class="two">
+        <label class="f"><span>Цена продажи</span><span class="unit"><input data-k="price" inputmode="numeric" placeholder="6 200 000"><em>₽</em></span></label>
+        <label class="f"><span id="rentLbl">Аренда в месяц</span><span class="unit"><input data-k="rent" inputmode="numeric" placeholder="62 000"><em>₽</em></span></label>
+      </div>
+      <div class="calc" id="calc"></div>
+      <label class="f"><span>Договор аренды</span><input data-k="lease" maxlength="200" placeholder="Договор до 2029 года"></label>
+    </div>
+
+    <div class="card">
+      <h3>Плюсы объекта</h3>
+      <label class="f"><textarea data-k="about" placeholder="Каждый плюс с новой строки&#10;Свежий ремонт&#10;Остановка рядом"></textarea><small>Каждый пункт с новой строки. Покажутся списком в карточке объекта.</small></label>
+    </div>
+
+    <div class="card">
+      <h3>Фото</h3>
+      <div class="photos" id="photos"></div>
+      <small style="color:var(--muted);font-size:13px">Первое фото — обложка. Нажмите ★, чтобы сделать фото обложкой. Фото сжимаются автоматически.</small>
+      <input type="file" id="file" accept="image/*" multiple hidden>
+    </div>
+
+    <button class="btn btn-danger" type="button" id="bDel" style="width:100%">Удалить объект</button>
+  </div>
+  <div class="bar"><div class="in">
+    <button class="btn btn-soft" type="button" data-back>Отмена</button>
+    <button class="btn btn-dark" type="button" id="bSave">Сохранить</button>
+  </div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+var $=function(s,r){return (r||document).querySelector(s);},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+var HOME='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>';
+var ST={sale:'В продаже',sold:'Продано',hidden:'Скрыт',example:'Пример'};
+var STH={sale:'Объект виден на сайте.',sold:'Объект виден на сайте серым с пометкой «Продано» — показывает, что вы закрываете сделки.',hidden:'Объект не виден на сайте. Удобно для черновиков.',example:'Видно на сайте с пометкой «Пример». Уберите, когда появятся реальные объекты.'};
+var TEN={wb:'Wildberries',oz:'Ozon',partner:'Партнёр'};
+var items=[],filter='all',cur=null,photos=[],busy=false;
+
+function toast(t,bad){var e=$('#toast');e.textContent=t;e.className='toast on'+(bad?' bad':'');clearTimeout(e._t);e._t=setTimeout(function(){e.className='toast';},2600);}
+function api(url,data){
+  return fetch(url,data===undefined?{credentials:'same-origin'}:{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(function(r){return r.json().catch(function(){return {};}).then(function(j){if(r.status===401&&url.indexOf('login')<0){show('login');throw new Error('Нужно войти');}if(!r.ok)throw new Error(j.error||'Ошибка');return j;});});
+}
+function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function num(x){return Number(String(x||'').replace(/[^\d.,]/g,'').replace(',','.'))||0;}
+function fmt(n){return n?Math.round(n).toLocaleString('ru-RU').replace(/ /g,' '):'';}
+function money(n){return n>=1e6?(n/1e6).toLocaleString('ru-RU',{maximumFractionDigits:2})+' млн ₽':fmt(n)+' ₽';}
+function show(v){$('#vLogin').hidden=v!=='login';$('#vList').hidden=v!=='list';$('#vEdit').hidden=v!=='edit';document.body.style.overflow=v==='edit'?'hidden':'';}
+
+/* вход */
+$('#fLogin').addEventListener('submit',function(e){e.preventDefault();$('#lErr').textContent='';
+  api('/api/admin/login',{password:$('#pw').value}).then(function(){$('#pw').value='';load();}).catch(function(er){$('#lErr').textContent=er.message;});});
+$('#bOut').addEventListener('click',function(){api('/api/admin/logout',{}).then(function(){show('login');});});
+
+/* список */
+function load(){return api('/api/admin/objects').then(function(r){items=r;drawList();show('list');});}
+function drawList(){
+  var c={all:items.length};items.forEach(function(o){c[o.status]=(c[o.status]||0)+1;});
+  $('#tabs').innerHTML=[['all','Все'],['sale','В продаже'],['sold','Продано'],['hidden','Скрытые'],['example','Примеры']].filter(function(t){return t[0]==='all'||c[t[0]];})
+    .map(function(t){return '<button type="button" data-f="'+t[0]+'" aria-pressed="'+(filter===t[0])+'">'+t[1]+'<i>'+(c[t[0]]||0)+'</i></button>';}).join('');
+  var L=items.filter(function(o){return filter==='all'||o.status===filter;});
+  $('#list').innerHTML=L.length?L.map(function(o){
+    var where=[o.city,o.addr].filter(Boolean).join(', ')||'Без адреса';
+    var what=(o.type==='pvz'?'С ПВЗ'+(o.tenant?' · '+TEN[o.tenant]:''):'Под ПВЗ')+(o.area?' · '+o.area+' м²':'');
+    return '<button class="row" type="button" data-id="'+o.id+'"><span class="thumb" style="'+(o.photos[0]?'background-image:url(\''+esc(o.photos[0])+'\')':'')+'">'+(o.photos[0]?'':HOME)+'</span>'+
+      '<span class="info"><b>'+money(o.price)+'</b><span>'+esc(where)+'</span><span>'+esc(what)+'<span class="st"> · '+ST[o.status]+'</span></span></span><span class="chip '+o.status+'">'+ST[o.status]+'</span></button>';
+  }).join(''):'<div class="empty"><b>Здесь пока пусто</b>Нажмите «Добавить объект», чтобы выставить первое помещение.</div>';
+}
+$('#tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(b){filter=b.dataset.f;drawList();}});
+$('#list').addEventListener('click',function(e){var b=e.target.closest('.row');if(b)edit(items.filter(function(o){return o.id==b.dataset.id;})[0]);});
+$('#bAdd').addEventListener('click',function(){edit(null);});
+
+/* форма */
+function setSeg(k,v){$$('.seg[data-k="'+k+'"] button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.v===v);});}
+function getSeg(k){var b=$('.seg[data-k="'+k+'"] button[aria-pressed="true"]');return b?b.dataset.v:'';}
+function sync(){
+  var t=getSeg('type');$('#tenantBox').hidden=t!=='pvz';$('#rentLbl').textContent=t==='pvz'?'Аренда в месяц':'Ожидаемая аренда';
+  $('#stHint').textContent=STH[getSeg('status')]||'';
+  var p=num($('[data-k=price]').value),r=num($('[data-k=rent]').value);
+  $('#calc').innerHTML=p&&r?'<div><b>'+fmt(r*12)+' ₽</b><span>в год</span></div><div><b>'+(p/(r*12)).toLocaleString('ru-RU',{maximumFractionDigits:1})+' лет</b><span>окупаемость</span></div><div><b>'+(r*12/p*100).toLocaleString('ru-RU',{maximumFractionDigits:1})+'%</b><span>доходность</span></div>':'';
+  $('#calc').hidden=!(p&&r);
+}
+$$('.seg').forEach(function(s){s.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;setSeg(s.dataset.k,b.dataset.v);sync();});});
+['price','rent'].forEach(function(k){var i=$('[data-k='+k+']');i.addEventListener('input',sync);i.addEventListener('blur',function(){i.value=fmt(num(i.value));});});
+
+function edit(o){
+  cur=o;o=o||{status:'sale',type:'pvz',tenant:'wb',about:[],photos:[]};
+  $('#eTitle').textContent=cur?'Редактирование':'Новый объект';
+  setSeg('status',o.status);setSeg('type',o.type);setSeg('tenant',o.tenant||'wb');
+  ['city','addr','floor','lease'].forEach(function(k){$('[data-k='+k+']').value=o[k]||'';});
+  $('[data-k=area]').value=o.area||'';$('[data-k=price]').value=fmt(o.price);$('[data-k=rent]').value=fmt(o.rent);
+  $('[data-k=about]').value=(o.about||[]).join('\n');
+  photos=(o.photos||[]).slice();drawPhotos();
+  $('#bDel').hidden=!cur;sync();show('edit');$('#vEdit').scrollTop=0;
+}
+function drawPhotos(){
+  $('#photos').innerHTML=photos.map(function(p,i){
+    return '<div class="ph" style="background-image:url(\''+esc(p)+'\')">'+(i===0?'<span class="cover">Обложка</span>':'<button class="pb star" type="button" data-star="'+i+'" title="Сделать обложкой"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.7 1-5.9L3.5 9.7l5.9-.8z"/></svg></button>')+
+      '<button class="pb del" type="button" data-del="'+i+'" title="Убрать фото"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>';
+  }).join('')+(photos.length<12?'<button class="add" type="button" id="bPh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Добавить фото</button>':'');
+}
+$('#photos').addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  if(b.id==='bPh')return $('#file').click();
+  if(b.dataset.del!=null){photos.splice(+b.dataset.del,1);drawPhotos();}
+  if(b.dataset.star!=null){var p=photos.splice(+b.dataset.star,1)[0];photos.unshift(p);drawPhotos();}
+});
+function shrink(file){return new Promise(function(ok,no){
+  var url=URL.createObjectURL(file),img=new Image();
+  img.onload=function(){var m=1600,w=img.naturalWidth,h=img.naturalHeight,k=Math.min(1,m/Math.max(w,h));
+    var c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    URL.revokeObjectURL(url);ok(c.toDataURL('image/jpeg',.82));};
+  img.onerror=function(){URL.revokeObjectURL(url);no(new Error('Не получилось открыть фото: '+file.name));};
+  img.src=url;});}
+$('#file').addEventListener('change',function(){
+  var fs=Array.prototype.slice.call(this.files,0,12-photos.length);this.value='';if(!fs.length)return;
+  toast('Обрабатываю фото…');
+  Promise.all(fs.map(function(f){return shrink(f).catch(function(e){toast(e.message,1);return null;});})).then(function(r){r.forEach(function(d){if(d)photos.push(d);});drawPhotos();});
+});
+
+$$('[data-back]').forEach(function(b){b.addEventListener('click',function(){show('list');});});
+$('#bSave').addEventListener('click',function(){
+  if(busy)return;
+  var d={id:cur?cur.id:null,status:getSeg('status'),type:getSeg('type'),tenant:getSeg('type')==='pvz'?getSeg('tenant'):'',
+    city:$('[data-k=city]').value,addr:$('[data-k=addr]').value,floor:$('[data-k=floor]').value,lease:$('[data-k=lease]').value,
+    area:num($('[data-k=area]').value),price:num($('[data-k=price]').value),rent:num($('[data-k=rent]').value),
+    about:$('[data-k=about]').value.split('\n').map(function(s){return s.trim();}).filter(Boolean),photos:photos};
+  if(!d.price){toast('Укажите цену продажи',1);$('[data-k=price]').focus();return;}
+  busy=true;$('#bSave').disabled=true;$('#bSave').textContent='Сохраняю…';
+  api('/api/admin/objects',d).then(function(){toast(cur?'Изменения сохранены':'Объект добавлен');return load();})
+    .catch(function(e){toast(e.message,1);}).then(function(){busy=false;$('#bSave').disabled=false;$('#bSave').textContent='Сохранить';});
+});
+$('#bDel').addEventListener('click',function(){
+  if(!cur||!confirm('Удалить объект навсегда? Фото тоже удалятся. Если объект просто продан — лучше поставьте статус «Продано».'))return;
+  api('/api/admin/objects/'+cur.id+'/delete',{}).then(function(){toast('Объект удалён');return load();}).catch(function(e){toast(e.message,1);});
+});
+
+/* контакты */
+$('#nav').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+  $$('#nav button').forEach(function(x){x.setAttribute('aria-pressed',x===b);});
+  var st=b.dataset.v==='settings';$('#pObjects').hidden=st;$('#pSettings').hidden=!st;
+  if(st)api('/api/settings').then(function(r){Object.keys(r).forEach(function(k){var i=$('#pSettings [name='+k+']');if(i)i.value=r[k]||'';});});});
+$('#pSettings').addEventListener('submit',function(e){e.preventDefault();var d={};
+  $$('#pSettings [name]').forEach(function(i){var v=i.value.trim();
+    if(i.dataset.kind==='pct'&&/^\d+([.,]\d+)?$/.test(v))v=v.replace('.',',')+'%';
+    if(i.dataset.kind==='rub'){v=v.replace(/^от\s*/i,'').replace(/\s*₽\s*$/,'');if(/^[\d\s]+$/.test(v))v=Number(v.replace(/\s/g,'')).toLocaleString('ru-RU').replace(/\u00a0/g,' ');}
+    d[i.name]=v;});
+  if(d.tg&&d.tg[0]!=='@'&&!/^https?:/.test(d.tg))d.tg='@'+d.tg;
+  $('#bSet').disabled=true;api('/api/admin/settings',d).then(function(r){Object.keys(r).forEach(function(k){var i=$('#pSettings [name='+k+']');if(i)i.value=r[k]||'';});toast('Сохранено');}).catch(function(er){toast(er.message,1);}).then(function(){$('#bSet').disabled=false;});});
+
+api('/api/admin/me').then(function(r){if(r.ok)load();else show('login');}).catch(function(){show('login');});
+})();
+</script>
+</body>
+</html>

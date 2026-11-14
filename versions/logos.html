@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>РАНТЬЕ · варианты логотипа</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111113;--muted:#6B6B72;--line:#E7E7EA;--tint:#F4F4F5;--ok:#22975E}
+*{box-sizing:border-box}body{margin:0;font-family:Onest,system-ui,sans-serif;color:var(--ink);background:#fff;padding:40px 16px}
+.wrap{max-width:1100px;margin:0 auto}h1{font-size:34px;letter-spacing:-.03em;margin:0 0 6px}p.lead{color:var(--muted);margin:0 0 28px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.opt{border:1px solid var(--line);border-radius:32px;padding:28px;display:flex;flex-direction:column;gap:22px}
+.opt h2{margin:0;font-size:18px}.opt h2 small{display:block;color:var(--muted);font-weight:500;font-size:14px;margin-top:4px}
+.row{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.mk{width:96px;height:96px;border-radius:28px;background:var(--ink);display:grid;place-items:center}
+.mk svg{width:62%;height:62%}
+.mk.w{background:#fff;border:1px solid var(--line)}
+.sm{width:40px;height:40px;border-radius:12px}.xs{width:24px;height:24px;border-radius:7px}
+.lock{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 22px 8px 8px}
+.lock .mk{width:44px;height:44px;border-radius:14px}
+.lock b{display:block;font-weight:800;letter-spacing:.22em;font-size:17px}.lock small{color:var(--muted);font-size:12.5px}
+.dark{background:var(--ink);border-radius:20px;padding:16px 20px;display:flex;align-items:center;gap:12px;color:#fff}
+.dark .mk{background:#fff;width:40px;height:40px;border-radius:12px}
+.dark b{font-weight:800;letter-spacing:.22em}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<h1>Логотип РАНТЬЕ</h1><p class="lead">Четыре варианта знака. Каждый показан крупно, в шапке сайта, на тёмном фоне и в размере иконки вкладки.</p>
+<div class="grid" id="g"></div>
+</div>
+<script>
+var L={
+ '1':{t:'Ключ',s:'Буква Р, у которой петля — головка ключа, а ножка — бородка. Ключи от помещения.',
+   d:'<circle cx="25" cy="18" r="8" fill="none" stroke="C" stroke-width="5"/><path d="M14.5 13v28" stroke="C" stroke-width="5" stroke-linecap="round"/><path d="M17 31h6M17 37h4" stroke="C" stroke-width="4" stroke-linecap="round"/>'},
+ '2':{t:'Рубль',s:'Р с перекладиной превращается в знак ₽. Помещение, которое приносит деньги.',
+   d:'<path d="M17 40V9h9a9.5 9.5 0 0 1 0 19h-9" fill="none" stroke="C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 33.5h17" stroke="C" stroke-width="5" stroke-linecap="round"/>'},
+ '3':{t:'Р с точкой',s:'Чистая геометрическая Р и зелёная точка — доход, который капает каждый месяц.',
+   d:'<path d="M16 40V9h9.5a9.5 9.5 0 0 1 0 19H16" fill="none" stroke="C" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="37" r="4" fill="#3DBE7A"/>'},
+ '4':{t:'Дверь',s:'Р внутри арки входной двери. Коммерческое помещение с отдельным входом.',
+   d:'<path d="M9 41V21a15 15 0 0 1 30 0v20" fill="none" stroke="C" stroke-width="3.5" stroke-linecap="round"/><path d="M20 38V17h5.5a5.5 5.5 0 0 1 0 11H20" fill="none" stroke="C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'}
+};
+function svg(k,c){return '<svg viewBox="0 0 48 48">'+L[k].d.replace(/"C"/g,'"'+c+'"')+'</svg>';}
+var h='';for(var k in L){var x=L[k];
+ h+='<div class="opt"><h2>'+k+'. '+x.t+'<small>'+x.s+'</small></h2>'+
+ '<div class="row"><div class="mk">'+svg(k,'#fff')+'</div><div class="mk w">'+svg(k,'#111113')+'</div><div class="mk sm">'+svg(k,'#fff')+'</div><div class="mk xs">'+svg(k,'#fff')+'</div></div>'+
+ '<div class="lock"><div class="mk">'+svg(k,'#fff')+'</div><div><b>РАНТЬЕ</b><small>агент собственников · Кирилл Горин</small></div></div>'+
+ '<div class="dark"><div class="mk">'+svg(k,'#111113')+'</div><b>РАНТЬЕ</b></div></div>';}
+document.getElementById('g').innerHTML=h;
+</script></body></html>

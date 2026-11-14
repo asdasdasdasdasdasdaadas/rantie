@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>РАНТЬЕ · Агент собственников помещений</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="description" content="Агент собственников коммерческих помещений: пункты выдачи Wildberries и Ozon, магазины, офисы, склады и другие арендаторы. Открытие и закрытие ПВЗ, повышение аренды, показания счётчиков, претензии, продажа арендного бизнеса. Работаю удалённо.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
+<style>
+/* Мягкий продуктовый лендинг: белое поле, фиолетовые плоскости-суперэллипсы, бенто-сетка услуг */
+:root{
+  --bg:#FFFFFF;
+  --tint:#F4F4F5;
+  --tint-2:#E8E8EA;
+  --ink:#111113;
+  --muted:#6B6B72;
+  --line:#E6E6E9;
+  --accent:#111113;
+  --accent-2:#3A3A40;
+  --accent-ink:#FFFFFF;
+  --ok:#22975E;
+  --no:#D2483C;
+  --font:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --r-s:16px;--r-m:26px;--r-l:36px;--pill:999px;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px -12px rgba(0,0,0,.14);
+  color-scheme:light;
+}
+@supports (corner-shape: squircle){:root{--r-s:24px;--r-m:40px;--r-l:56px}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--font);-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px)}
+img,svg{max-width:100%}
+a{color:inherit}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.025em;line-height:1.05;text-wrap:balance}
+h2{font-size:clamp(30px,4.4vw,48px)}
+h3{font-size:20px;font-weight:700;letter-spacing:-.015em;line-height:1.25}
+p{margin:0}
+:focus-visible{outline:3px solid var(--accent-2);outline-offset:3px;border-radius:12px}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.sq{corner-shape:squircle}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--accent);background:var(--tint);padding:7px 14px;border-radius:var(--pill)}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.muted{color:var(--muted)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:600 16px/1 var(--font);padding:17px 26px;border-radius:var(--r-s);corner-shape:squircle;border:0;cursor:pointer;text-decoration:none;transition:transform .18s,box-shadow .18s,background .18s}
+.btn-primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 10px 24px -10px rgba(0,0,0,.35)}
+.btn-primary:hover{background:var(--accent-2);transform:translateY(-2px)}
+.btn-soft{background:var(--tint);color:var(--accent)}
+.btn-soft:hover{background:var(--tint-2)}
+.btn-white{background:#fff;color:var(--accent)}
+.btn-white:hover{transform:translateY(-2px)}
+.btn svg{width:18px;height:18px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;padding-block:14px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--bg)}
+.navbar{display:flex;align-items:center;justify-content:space-between;gap:16px;background:rgba(255,255,255,.82);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border:1px solid var(--line);border-radius:var(--pill);padding:8px 8px 8px 10px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:700;font-size:16px;letter-spacing:-.01em}
+.mark{display:grid;place-items:center;width:40px;height:40px;border-radius:14px;corner-shape:squircle;background:linear-gradient(135deg,var(--accent-2),var(--accent));color:#fff;font-weight:800;font-size:15px;letter-spacing:-.02em}
+.mark svg{width:66%;height:66%;display:block}
+@supports (corner-shape: squircle){.mark{border-radius:20px}}
+.brand small{display:block;font-weight:500;font-size:12px;color:var(--muted);letter-spacing:0}
+.links{display:flex;gap:4px}
+.links a{text-decoration:none;font-size:15px;font-weight:500;color:var(--muted);padding:10px 14px;border-radius:var(--pill);transition:background .15s,color .15s}
+.links a:hover{background:var(--tint);color:var(--accent)}
+.navbar .btn{padding:13px 20px;border-radius:var(--pill);corner-shape:round}
+@media (max-width:940px){.links{display:none}}
+@media (max-width:420px){.brand small{display:none}}
+.brand .word{font-weight:800;letter-spacing:.22em;font-size:15px}
+.brand .word small{letter-spacing:.02em;margin-top:2px}
+.mark{font-size:19px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding-block:48px 72px}
+.hero h1{font-size:clamp(40px,6vw,72px);margin-top:22px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lead{margin-top:24px;font-size:19px;color:var(--muted);max-width:32em}
+.hero .lead b{color:var(--ink);font-weight:600}
+.hero .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.trust{display:flex;flex-wrap:wrap;gap:10px;margin-top:36px}
+.trust span{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:9px 14px;border:1px solid var(--line);border-radius:var(--pill)}
+.trust svg{width:16px;height:16px;color:var(--ok)}
+
+.stage{position:relative;min-width:0}
+.stage .board{background:var(--tint);border-radius:var(--r-l);corner-shape:squircle;padding:28px;aspect-ratio:1/1;max-width:100%;display:grid;place-items:center}
+.stage .board svg{width:100%;height:auto}
+.toast{position:absolute;display:flex;align-items:center;gap:12px;background:#fff;border-radius:var(--r-s);corner-shape:squircle;padding:12px 16px 12px 12px;box-shadow:var(--shadow);font-size:14px;line-height:1.3;max-width:260px;animation:float 6s ease-in-out infinite}
+.toast b{display:block;font-size:15px}
+.toast .ic{flex-shrink:0;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;corner-shape:squircle;background:var(--tint);color:var(--accent)}
+.toast .ic svg{width:20px;height:20px}
+.toast.t1{top:-22px;right:32px}
+.toast.t2{bottom:-22px;left:-24px;animation-delay:-3s}
+.toast.t2 .ic{background:#E5F6EC;color:var(--ok)}
+.ledger{position:absolute;right:-30px;bottom:-44px;width:262px;background:#fff;border-radius:var(--r-s);corner-shape:squircle;box-shadow:var(--shadow);padding:16px 18px 14px;font-size:13px}
+.lg-h{display:flex;justify-content:space-between;align-items:center;gap:8px;white-space:nowrap;font-size:12.5px;color:var(--muted);font-weight:500}
+.lg-h i{font-style:normal;display:inline-flex;align-items:center;gap:6px;color:var(--ok);font-weight:600}
+.lg-h i::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px #E5F6EC}
+.lg-sum{font-size:28px;font-weight:800;letter-spacing:-.04em;color:var(--ok);margin:6px 0 10px;line-height:1}
+.lg-bars{display:flex;align-items:flex-end;gap:5px;height:44px;margin-bottom:12px}
+.lg-bars span{flex:1;border-radius:5px;background:#D7F0E1;transform-origin:bottom;animation:grow .9s cubic-bezier(.2,.8,.2,1) both}
+.lg-bars span:last-child{background:var(--ok)}
+.lg-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
+.lg-row span{color:var(--muted)}
+.lg-row b{color:var(--ok);font-weight:700;white-space:nowrap}
+@keyframes grow{from{transform:scaleY(0)}}
+@media (prefers-reduced-motion:reduce){.lg-bars span,.toast{animation:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media (max-width:900px){.hero{grid-template-columns:1fr;gap:40px;padding-block:24px 56px}.toast.t1{right:12px}.toast.t2{left:12px}.ledger{position:relative;right:auto;bottom:auto;width:auto;margin:16px 0 0}.toast.t2{display:none}}
+
+/* sections */
+section{padding-block:88px}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:40px}
+.head .side{max-width:30em;color:var(--muted)}
+.head h2{margin-top:14px}
+
+/* who */
+.facts{display:grid;grid-template-columns:repeat(4,1fr);background:var(--tint);border-radius:var(--r-m);corner-shape:squircle;padding:8px}
+.fact{padding:22px 24px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.fact+.fact{border-left:1px solid var(--tint-2)}
+.fact b{font-size:clamp(24px,2.4vw,32px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.fact span{color:var(--muted);font-size:15px;line-height:1.45}
+@media (max-width:900px){.facts{grid-template-columns:1fr 1fr}.fact:nth-child(3){border-left:0}.fact:nth-child(n+3){border-top:1px solid var(--tint-2)}}
+@media (max-width:420px){.fact{padding:18px 14px}.fact b{font-size:20px}.fact span{font-size:14px}}
+.flow{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:16px;align-items:stretch}
+.flow .f{background:var(--tint);border-radius:var(--r-m);corner-shape:squircle;padding:28px;display:flex;flex-direction:column;gap:10px;position:relative;min-width:0}
+.flow .f.me{background:linear-gradient(150deg,var(--accent-2),var(--accent));color:#fff}
+.flow .f.me .muted{color:rgba(255,255,255,.82)}
+.flow .tag{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+.flow .f.me .tag{color:rgba(255,255,255,.75)}
+.flow ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.flow li{background:#fff;border-radius:var(--pill);padding:6px 12px;font-size:14px;font-weight:500}
+.flow .f:not(:last-child)::after{content:"";position:absolute;right:-14px;top:50%;width:12px;height:12px;border-top:2.5px solid var(--accent);border-right:2.5px solid var(--accent);transform:translateY(-50%) rotate(45deg);z-index:2}
+@media (max-width:820px){.flow{grid-template-columns:1fr}.flow .f:not(:last-child)::after{right:50%;top:auto;bottom:-14px;transform:translateX(50%) rotate(135deg)}}
+
+/* bento services */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tile{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-m);corner-shape:squircle;padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0;transition:transform .2s,box-shadow .2s,border-color .2s}
+.tile:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--tint-2)}
+.tile .ic{width:48px;height:48px;border-radius:16px;corner-shape:squircle;display:grid;place-items:center;background:var(--tint);color:var(--accent)}
+.tile .ic svg{width:24px;height:24px}
+.tile p{color:var(--muted);font-size:15px}
+.tile .mp{display:flex;gap:6px;margin-top:auto;padding-top:6px}
+.mp span{font-size:12px;font-weight:600;padding:5px 10px;border-radius:var(--pill);background:var(--tint);color:var(--accent)}
+.mp span.off{background:transparent;border:1px dashed var(--line);color:#A3A3AA;text-decoration:line-through}
+.tile.wide{grid-column:span 2}
+.tile.feature{grid-column:span 2;grid-row:span 2;background:linear-gradient(160deg,var(--tint),var(--tint-2));border-color:transparent;padding:34px}
+.tile.feature h3{font-size:28px}
+.tile.feature p{font-size:17px}
+.tile.feature .ic{background:var(--accent);color:#fff;width:60px;height:60px}
+@media (max-width:980px){.bento{grid-template-columns:repeat(2,1fr)}.tile.feature{grid-row:auto}}
+@media (max-width:560px){.bento{grid-template-columns:1fr}.tile.wide,.tile.feature{grid-column:auto}}
+.legend{margin-top:18px;font-size:14px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+
+/* check */
+.pv{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:stretch}
+.pv-main{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-l);corner-shape:squircle;padding:clamp(24px,4vw,44px);display:flex;flex-direction:column;gap:28px;min-height:400px;min-width:0}
+.pv-top{display:flex;align-items:center;gap:16px;font-size:14px;font-weight:600;color:var(--muted)}
+.pv-top span{white-space:nowrap;font-variant-numeric:tabular-nums}
+.pv-bar{flex:1;height:4px;border-radius:4px;background:var(--tint-2);overflow:hidden}
+.pv-bar i{display:block;height:100%;width:0;background:var(--ink);border-radius:4px;transition:width .35s ease}
+.pv-stage{flex:1;display:flex;flex-direction:column;gap:14px;animation:pvIn .35s ease}
+@keyframes pvIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pv-stage h3{font-size:clamp(28px,3.6vw,44px);letter-spacing:-.035em;line-height:1.05}
+.pv-stage .hint{color:var(--muted);font-size:17px;margin:0;max-width:520px}
+.pv-ans{display:flex;gap:10px;margin-top:auto;padding-top:20px;flex-wrap:wrap}
+.pv-ans button{flex:1 1 0;min-width:0;font:700 18px/1 var(--font);padding:22px;border-radius:var(--r-s);corner-shape:squircle;cursor:pointer;transition:transform .15s,background .15s,border-color .15s}
+.pv-ans .y{background:var(--ink);color:#fff;border:1.5px solid var(--ink)}
+.pv-ans .n{background:var(--bg);color:var(--ink);border:1.5px solid var(--line)}
+.pv-ans button:hover{transform:translateY(-2px)}
+.pv-ans .n:hover{border-color:var(--ink)}
+.pv-back{align-self:flex-start;background:none;border:0;padding:0;font:600 14px/1 var(--font);color:var(--muted);cursor:pointer}
+.pv-back:hover{color:var(--ink)}
+.pv-back[hidden]{display:none}
+.pv-verdict{align-self:flex-start;font-size:13px;font-weight:700;padding:7px 12px;border-radius:var(--pill);background:var(--tint)}
+.pv-verdict.good{background:#E6F6EC;color:#16733F}
+.pv-verdict.mid{background:#FFF3D6;color:#7A5600}
+.pv-verdict.bad{background:#FDE8E8;color:#A12828}
+.pv-issues{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.pv-issues li{background:var(--tint);border-radius:var(--r-s);corner-shape:squircle;padding:14px 16px;font-size:15px;color:var(--muted)}
+.pv-issues b{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}
+.pv-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:16px}
+.pv-list{margin:0;padding:10px;list-style:none;background:var(--tint);border-radius:var(--r-l);corner-shape:squircle;display:flex;flex-direction:column;gap:2px}
+.pv-list button{width:100%;display:flex;align-items:center;gap:12px;background:none;border:0;border-radius:16px;padding:12px;font:500 15px/1.3 var(--font);color:var(--muted);text-align:left;cursor:pointer;transition:background .15s,color .15s}
+.pv-list button:hover:not(:disabled){background:var(--tint-2)}
+.pv-list button:disabled{cursor:default}
+.pv-list .d{flex-shrink:0;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;border:1.5px solid var(--tint-2);background:var(--bg);color:var(--muted)}
+.pv-list .d svg{width:14px;height:14px}
+.pv-list .cur{background:var(--bg);color:var(--ink);font-weight:600}
+.pv-list .cur .d{border-color:var(--ink);color:var(--ink)}
+.pv-list .yes{color:var(--ink)}
+.pv-list .yes .d{background:var(--ink);border-color:var(--ink);color:#fff}
+.pv-list .no .d{background:var(--tint-2);border-color:var(--tint-2);color:var(--muted)}
+.pv-list .no .t{text-decoration:line-through;text-decoration-color:rgba(0,0,0,.25)}
+@media (max-width:900px){.pv{grid-template-columns:1fr}.pv-list{display:none}.pv-main{min-height:0}}
+@media (max-width:420px){.pv-ans button{padding:18px}}
+@media (max-width:520px){.q{flex-direction:column;align-items:flex-start;padding:16px}}
+
+/* sale */
+.sale{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.deal{border-radius:var(--r-m);corner-shape:squircle;padding:34px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line);min-width:0}
+.deal.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.deal.on .muted,.deal.on li{color:rgba(255,255,255,.75)}
+.deal ul{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.deal li{display:flex;gap:10px;color:var(--muted)}
+.deal li::before{content:"";flex-shrink:0;width:20px;height:20px;margin-top:2px;border-radius:50%;background:var(--tint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.5 2.5L14 7.5' fill='none' stroke='%23111113' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/20px no-repeat}
+.deal.on li::before{background-color:rgba(255,255,255,.14);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.5 2.5L14 7.5' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.deal .pill{align-self:flex-start;font-size:13px;font-weight:600;padding:6px 12px;border-radius:var(--pill);background:var(--tint);color:var(--accent)}
+.deal.on .pill{background:rgba(255,255,255,.14);color:#fff}
+.deal .go{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:10px;font-weight:600;text-decoration:none;padding:14px 20px;border-radius:var(--pill);background:var(--tint);color:var(--ink);transition:background .15s,gap .15s}
+.deal .go:hover{background:var(--tint-2);gap:14px}
+.deal.on .go{background:#fff;color:var(--ink)}
+.deal.on .go:hover{background:#E8E8EA}
+.deal ul{margin-bottom:8px}
+.op{margin-top:40px}
+.op-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:16px}
+.op-h h3{margin:0;font-size:22px;font-weight:800;letter-spacing:-.03em}
+.op-h a{color:var(--ink);font-weight:600;text-decoration:none;white-space:nowrap}
+.op-h a span{display:inline-block;transition:transform .2s}.op-h a:hover span{transform:translateX(4px)}
+.op-list{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.oc{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r-m,22px);corner-shape:squircle;overflow:hidden;color:var(--ink);text-decoration:none;background:#fff;transition:transform .2s,box-shadow .2s}
+.oc:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.oc-ph{position:relative;aspect-ratio:16/10;background:var(--tint);display:grid;place-items:center;color:#B4B4BA}
+.oc-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.oc-ph svg{width:40px;height:40px}
+.oc-t{position:absolute;left:12px;top:12px;background:#fff;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:600;color:var(--ink)}
+.oc-t.ex{left:auto;right:12px;background:var(--ink);color:#fff}
+.oc-b{padding:16px 18px 18px;display:flex;flex-direction:column;gap:4px}
+.oc-b b{font-size:22px;font-weight:800;letter-spacing:-.03em}
+.oc-b small{color:var(--muted);font-size:14px}
+.oc-b i{font-style:normal;color:var(--ok);font-weight:700;font-size:14px;margin-top:6px}
+@media (max-width:900px){.op-list{grid-template-columns:1fr 1fr}.op-list .oc:nth-child(3){display:none}}
+@media (max-width:600px){.op-list{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:0 16px 6px;gap:10px;scrollbar-width:none}.op-list::-webkit-scrollbar{display:none}.op-list .oc{flex:0 0 78%;scroll-snap-align:start}.op-list .oc:nth-child(3){display:flex}}
+@media (max-width:760px){.sale{grid-template-columns:1fr}}
+
+/* objections */
+.faq{display:grid;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:start}
+.faq .head{display:block;position:sticky;top:110px;margin:0}
+.faq .head p{margin-top:16px;color:var(--muted)}
+.acc{display:flex;flex-direction:column;gap:10px}
+details{background:var(--tint);border-radius:var(--r-m);corner-shape:squircle;transition:background .2s}
+details[open]{background:var(--tint-2)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 24px;font-weight:700;font-size:18px;letter-spacing:-.01em}
+summary::-webkit-details-marker{display:none}
+summary .pm{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;color:var(--accent);transition:transform .2s}
+details[open] summary .pm{transform:rotate(45deg)}
+details .ans{padding:0 24px 24px;color:var(--muted);max-width:40em}
+@media (max-width:860px){.faq{grid-template-columns:1fr;gap:24px}.faq .head{position:static}}
+
+/* prices */
+.pc-big,.pc-small{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pc-small{margin-top:14px}
+.pc{display:flex;flex-direction:column;gap:12px;min-width:0;border-radius:var(--r-l);corner-shape:squircle;padding:30px 30px 28px;transition:transform .2s}
+.pc-big .pc{background:var(--tint);min-height:300px}
+.pc-small .pc{border:1px solid var(--line);padding:24px 26px}
+.pc-k{font-size:15px;font-weight:600}
+.pc-full{display:grid;grid-template-columns:1.1fr 1fr;gap:28px 48px;background:var(--ink);color:#fff;border-radius:var(--r-l);corner-shape:squircle;padding:36px 40px;margin-bottom:14px}
+.pf-l{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.pf-tag{font-size:13px;font-weight:600;background:rgba(255,255,255,.12);border-radius:999px;padding:6px 12px}
+.pf-l h3{margin:auto 0 0;font-size:clamp(30px,3.4vw,44px);font-weight:800;letter-spacing:-.04em;line-height:1}
+.pf-l p{margin:0;color:rgba(255,255,255,.66);font-size:16px;line-height:1.5;max-width:420px}
+.pf-v{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.14)}
+.pf-v b{font-size:clamp(42px,4.6vw,62px);white-space:nowrap;font-weight:800;letter-spacing:-.05em;line-height:.95}
+.pf-v>span{color:rgba(255,255,255,.66);font-size:15px;font-weight:500}
+.pf-r ul{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.pf-r li{display:flex;gap:9px;align-items:flex-start;font-size:14.5px;font-weight:500;line-height:1.35}
+.pf-r li svg{width:16px;height:16px;flex-shrink:0;margin-top:2px;color:#6FD39C}
+@media (max-width:900px){.pc-full{grid-template-columns:1fr;padding:28px}.pf-l h3{margin-top:8px}}
+@media (max-width:600px){.pc-full{padding:24px;margin-bottom:10px}.pf-r ul{grid-template-columns:1fr}}
+.pc-v{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:auto}
+.pc-big .pc-v{flex-direction:column;align-items:flex-start;gap:8px}
+.pc-big .pc-v b{font-size:clamp(56px,6.4vw,84px);font-weight:800;letter-spacing:-.05em;line-height:.95}
+.pc-small .pc-v{margin-top:4px}
+.pc-small .pc-v b{font-size:30px;font-weight:800;letter-spacing:-.035em;line-height:1.05;white-space:nowrap}
+.pc-v>span{color:var(--muted);font-size:15px;font-weight:500}
+.pc p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
+.pc-big .pc p{border-top:1px solid var(--tint-2);padding-top:14px}
+.tbd{text-decoration:underline dotted #C9A400 3px;text-underline-offset:.12em;text-decoration-skip-ink:none}
+.pc-foot{display:flex;justify-content:space-between;align-items:center;gap:16px 28px;flex-wrap:wrap;margin-top:26px}
+.pc-foot ul{list-style:none;margin:0;padding:0;display:flex;gap:10px 26px;flex-wrap:wrap}
+.pc-btns{display:flex;gap:8px;flex-wrap:wrap}
+.pc-foot li a{color:inherit;text-underline-offset:3px}
+a.fact{text-decoration:none;color:inherit;transition:background .15s}
+a.fact:hover{background:var(--tint-2)}
+.fact u{color:var(--ink);text-underline-offset:3px}
+.pc-foot li{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px}
+.pc-foot li::before{content:"";width:20px;height:20px;border-radius:50%;flex-shrink:0;background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.5 2.5L14 7.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/20px no-repeat}
+@media (max-width:900px){.pc-big,.pc-small{grid-template-columns:1fr 1fr}.pc-big .pc:last-child{grid-column:1/-1;min-height:0}.pc-big .pc{min-height:260px}}
+@media (max-width:600px){.pc-big,.pc-small{grid-template-columns:1fr;gap:10px}.pc-small{margin-top:10px}.pc-big .pc{min-height:0;padding:24px}.pc-big .pc-v{margin-top:18px}.pc-big .pc-v b{font-size:58px}.pc-foot ul{flex-direction:column}.pc-btns,.pc-foot .btn{width:100%}}
+
+/* steps */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,1fr);gap:12px;counter-reset:s}
+.steps li{counter-increment:s;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-m);corner-shape:squircle;padding:22px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
+.steps h3{font-size:17px}
+.steps p{color:var(--muted);font-size:14px}
+@media (max-width:1060px){.steps{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:620px){.steps{grid-template-columns:1fr 1fr}}
+@media (max-width:420px){.steps{grid-template-columns:1fr}}
+.remote{margin-top:16px;display:flex;align-items:center;gap:18px;background:var(--tint);border-radius:var(--r-m);corner-shape:squircle;padding:22px 26px}
+.remote .ic{flex-shrink:0;width:52px;height:52px;border-radius:18px;corner-shape:squircle;background:#fff;color:var(--accent);display:grid;place-items:center}
+.remote .ic svg{width:26px;height:26px}
+.remote b{display:block;font-size:18px}
+.remote p{color:var(--muted)}
+
+/* contact */
+.contact{background:linear-gradient(150deg,#2A2A30,var(--accent) 55%,#000000);color:#fff;border-radius:var(--r-l);corner-shape:squircle;padding:clamp(28px,5vw,64px);display:grid;grid-template-columns:1fr 1fr;gap:40px;position:relative;overflow:hidden}
+.contact::after{content:"";position:absolute;width:420px;height:420px;right:-140px;top:-160px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.18),transparent);pointer-events:none}
+.contact h2{font-size:clamp(30px,4vw,46px)}
+.contact .sub{margin-top:16px;opacity:.85;max-width:28em;font-size:18px}
+.contact .actions{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap}
+.cards{display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+.cc{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,255,255,.12);border-radius:var(--r-s);corner-shape:squircle;padding:14px 14px 14px 20px;flex-wrap:wrap}
+.cc .l{font-size:13px;opacity:.7}
+.cc .v{font-weight:600;font-size:18px;user-select:all;word-break:break-all}
+.copy{font:600 14px/1 var(--font);background:#fff;color:var(--accent);border:0;padding:11px 16px;border-radius:var(--pill);cursor:pointer}
+.copy:hover{background:var(--tint)}
+@media (max-width:820px){.contact{grid-template-columns:1fr}}
+
+footer{padding-block:36px 52px;color:var(--muted);font-size:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+html,body{overflow-x:clip}
+.eyebrow{display:inline-block;max-width:100%;line-height:1.4}
+.eyebrow::before{display:inline-block;vertical-align:middle;margin:-2px 8px 0 0}
+
+/* «Что я делаю»: список услуг слева, подробности справа, фильтр по маркетплейсу */
+.svc-filter{display:inline-flex;gap:4px;padding:4px;background:var(--tint);border-radius:var(--pill);margin-bottom:20px;flex-wrap:wrap}
+.svc-filter button{border:0;background:transparent;font:600 15px/1 var(--font);color:var(--muted);padding:11px 18px;border-radius:var(--pill);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background .2s,color .2s}
+.svc-filter button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%}
+.wb-dot{background:var(--wb)}.oz-dot{background:var(--oz)}
+.svc{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:start}
+.svc-list{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.srow{display:grid;grid-template-columns:44px 1fr auto 24px;align-items:center;gap:16px;padding:18px 14px;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;cursor:pointer;font:inherit;color:var(--ink);border-radius:0;position:relative;transition:background .2s,opacity .25s,padding .2s}
+.srow:hover{background:var(--tint)}
+.srow .si{width:44px;height:44px;border-radius:14px;corner-shape:squircle;display:grid;place-items:center;background:var(--tint);color:var(--ink);transition:background .2s,color .2s}
+.srow .si svg{width:22px;height:22px}
+.srow b{display:block;font-size:clamp(17px,1.7vw,21px);font-weight:700;letter-spacing:-.02em;line-height:1.25}
+.srow small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.srow .mk{display:flex;gap:5px}
+.srow .mk i{width:9px;height:9px;border-radius:50%}
+.srow .ar{width:24px;height:24px;color:var(--muted);transition:transform .2s,color .2s}
+.srow[aria-selected="true"]{background:var(--ink);color:#fff;border-radius:18px;corner-shape:squircle;border-bottom-color:transparent}
+.srow[aria-selected="true"] small{color:rgba(255,255,255,.65)}
+.srow[aria-selected="true"] .si{background:rgba(255,255,255,.12);color:#fff}
+.srow[aria-selected="true"] .ar{color:#fff;transform:translateX(4px)}
+.srow.dim{opacity:.28}
+.svc-card{position:sticky;top:110px;background:var(--tint);border-radius:var(--r-l);corner-shape:squircle;padding:clamp(24px,3vw,36px);display:flex;flex-direction:column;gap:18px;min-width:0}
+.svc-card .big{width:72px;height:72px;border-radius:24px;corner-shape:squircle;background:var(--ink);color:#fff;display:grid;place-items:center}
+.svc-card .big svg{width:34px;height:34px}
+.svc-card h3{font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.svc-card .desc{color:var(--muted);font-size:17px}
+.svc-card .gets{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.svc-card .gets li{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:16px;corner-shape:squircle;padding:12px 14px;font-weight:600;font-size:15px}
+.svc-card .gets li::before{content:"";flex-shrink:0;width:20px;height:20px;margin-top:1px;border-radius:50%;background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10.5l2.5 2.5L14 7.5' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/20px no-repeat}
+.svc-card .foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-top:4px}
+.svc-card .mps{display:flex;gap:6px;flex-wrap:wrap}
+.svc-card .mps span{font-size:13px;font-weight:700;padding:7px 12px;border-radius:var(--pill);background:#fff}
+.svc-card .mps span.no{color:#A3A3AA;text-decoration:line-through;background:transparent;border:1px dashed var(--line)}
+.svc-card .btn{padding:14px 20px}
+.svc-card.swap{animation:swap .35s cubic-bezier(.2,.7,.2,1)}
+@keyframes swap{from{opacity:.3;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (max-width:900px){.svc{grid-template-columns:1fr}.svc-card{position:static;margin:6px 0 10px}.srow{grid-template-columns:40px 1fr auto;padding:16px 10px}.srow .ar{display:none}}
+/* Другие арендаторы */
+.other-dot{background:var(--ink)}
+.other{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(24px,4vw,56px);align-items:center;border:1px solid var(--line);border-radius:var(--r-l);corner-shape:squircle;padding:clamp(24px,4vw,52px)}
+.other-head{display:flex;flex-direction:column;gap:16px;align-items:flex-start}
+.other-head h2{margin:0}
+.other-head p{color:var(--muted);font-size:17px;max-width:30em}
+.kinds{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kinds li{background:var(--tint);border-radius:22px;corner-shape:squircle;padding:20px 18px;display:flex;flex-direction:column;gap:4px;min-width:0;transition:background .2s,color .2s,transform .2s}
+.kinds li:hover{background:var(--ink);color:#fff;transform:translateY(-3px)}
+.kinds li:hover small{color:rgba(255,255,255,.65)}
+.kinds li:hover .ki{background:rgba(255,255,255,.12);color:#fff}
+.kinds .ki{width:44px;height:44px;border-radius:14px;corner-shape:squircle;background:#fff;color:var(--ink);display:grid;place-items:center;margin-bottom:10px;transition:background .2s,color .2s}
+.kinds .ki svg{width:22px;height:22px}
+.kinds b{font-size:17px;letter-spacing:-.01em}
+.kinds small{color:var(--muted);font-size:14px}
+@media (max-width:980px){.other{grid-template-columns:1fr}}
+@media (max-width:560px){.kinds{grid-template-columns:1fr 1fr}}
+/* Цвета названий маркетплейсов: единственный цвет на чёрно-белой странице */
+:root{--wb:#8B1FC2;--oz:#1F5BFF;--wb-on-dark:#D08BFF;--oz-on-dark:#82A8FF}
+.wb{color:var(--wb);font-weight:700}
+.oz{color:var(--oz);font-weight:700}
+:is(.flow .f.me,.price.hot,.contact,.deal.on,.result,.hero-dark) .wb{color:var(--wb-on-dark)}
+:is(.flow .f.me,.price.hot,.contact,.deal.on,.result,.hero-dark) .oz{color:var(--oz-on-dark)}
+.mp span .wb,.mk span .wb{font-weight:inherit}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="wrap">
+    <div class="navbar">
+      <a class="brand" href="#top"><span class="mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 40V9h9.5a9.5 9.5 0 0 1 0 19H16" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="37" r="4" fill="#3DBE7A"/></svg></span><span class="word">РАНТЬЕ<small>агент собственников · <span data-s="name">Кирилл Горин</span></small></span></a>
+      <nav class="links">
+        <a href="#services">Услуги</a>
+        <a href="#other">Не только ПВЗ</a>
+        <a href="#check">Проверка</a>
+        <a href="#sale">Объекты</a>
+        <a href="#why">Вопросы</a>
+        <a href="#prices">Цены</a>
+      </nav>
+      <a class="btn btn-primary" href="#contacts">Написать</a>
+    </div>
+  </div>
+</div>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <span class="eyebrow"><span class="wb">Wildberries</span> · <span class="oz">Ozon</span> · любые помещения</span>
+      <h1>Сдам помещение <em>под&nbsp;ПВЗ</em> и&nbsp;возьму всё остальное на&nbsp;себя</h1>
+      <p class="lead">Договариваюсь с <b><span class="wb">ООО&nbsp;«РВБ»</span> (<span class="wb">Wildberries</span>)</b>, <span class="oz">Ozon</span> и&nbsp;партнёрскими ИП, а&nbsp;также с&nbsp;любыми другими арендаторами: магазинами, офисами, сферой услуг. Открываю и&nbsp;закрываю пункты выдачи, поднимаю аренду, передаю показания и&nbsp;отвечаю на&nbsp;претензии. Работаю <b>удалённо</b> по&nbsp;всей России.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#check">Проверить помещение
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></a>
+        <a class="btn btn-soft" href="#prices">Посмотреть цены</a>
+      </div>
+      <div class="trust">
+        <span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>ПВЗ и любые коммерческие помещения</span>
+        <span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>Оплата за результат</span>
+        <span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>Официально, как ИП</span>
+      </div>
+    </div>
+
+    <div class="stage" aria-hidden="true">
+      <div class="board">
+        <svg viewBox="18 52 364 318">
+          <defs>
+            <pattern id="pg" width="16" height="16" patternUnits="userSpaceOnUse" x="66" y="72"><path d="M16 0H0V16" fill="none" stroke="#EFEFF2" stroke-width="1"/></pattern>
+          </defs>
+          <rect x="66" y="72" width="288" height="238" rx="20" fill="#fff"/>
+          <rect x="66" y="72" width="288" height="238" rx="20" fill="url(#pg)"/>
+          <g fill="#E6E6EA"><rect x="84" y="90" width="76" height="9" rx="4.5"/><rect x="84" y="106" width="76" height="9" rx="4.5"/><rect x="84" y="122" width="76" height="9" rx="4.5"/><rect x="84" y="138" width="50" height="9" rx="4.5"/></g>
+          <text x="122" y="165" text-anchor="middle" font-family="Onest,sans-serif" font-size="9" font-weight="700" letter-spacing="1.4" fill="#9A9AA2">СКЛАД</text>
+          <text x="320" y="101" text-anchor="middle" font-family="Onest,sans-serif" font-size="9" font-weight="700" letter-spacing="1.4" fill="#9A9AA2">С/У</text>
+          <text x="308" y="240" text-anchor="middle" font-family="Onest,sans-serif" font-size="8.5" font-weight="700" letter-spacing="1.2" fill="#9A9AA2">ПРИМЕРОЧНЫЕ</text>
+          <path d="M178 268 C190 236 204 214 226 199" fill="none" stroke="#111113" stroke-opacity=".3" stroke-width="2" stroke-dasharray="0 6" stroke-linecap="round"/>
+          <text x="84" y="226" font-family="Onest,sans-serif" font-size="24" font-weight="800" letter-spacing="-.6" fill="#111113">46,5<tspan font-size="13" font-weight="700" dx="3">м²</tspan></text>
+          <text x="84" y="242" font-family="Onest,sans-serif" font-size="10" font-weight="500" fill="#8A8A92">общая площадь</text>
+          <g fill="none" stroke="#111113" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M120 310H86a20 20 0 0 1-20-20V92a20 20 0 0 1 20-20h248a20 20 0 0 1 20 20v198a20 20 0 0 1-20 20H172" stroke-width="5.5"/>
+            <path d="M178 72v68M66 176h112M286 72v52h32M262 310v-60h10M298 250h20M344 250h10M308 250v60" stroke-width="2.5"/>
+            <path d="M120 310v-52" stroke-width="2.5"/>
+          </g>
+          <path d="M120 258a52 52 0 0 1 52 52" fill="none" stroke="#B4B4BA" stroke-width="1.5" stroke-dasharray="3 4"/>
+          <path d="M272 250h26M318 250h26" stroke="#9A9AA2" stroke-width="1.5" stroke-dasharray="2 3"/>
+          <rect x="214" y="152" width="100" height="40" rx="20" fill="#111113"/>
+          <text x="264" y="177" text-anchor="middle" font-family="Onest,sans-serif" font-size="15" font-weight="800" letter-spacing=".5" fill="#fff">ПВЗ</text>
+          <text x="146" y="327" text-anchor="middle" font-family="Onest,sans-serif" font-size="8.5" font-weight="700" letter-spacing="1.2" fill="#111113">ВХОД</text>
+          <g stroke="#9A9AA2" stroke-width="1.2" stroke-linecap="round"><path d="M66 350H354M62 354l8-8M350 354l8-8M40 72V310M36 76l8-8M36 314l8-8"/></g>
+          <rect x="190" y="342" width="40" height="16" fill="#F4F4F5"/>
+          <text x="210" y="354" text-anchor="middle" font-family="Onest,sans-serif" font-size="11" font-weight="600" fill="#6B6B72">7,5 м</text>
+          <rect x="32" y="171" width="16" height="40" fill="#F4F4F5"/>
+          <text x="40" y="191" text-anchor="middle" dominant-baseline="central" font-family="Onest,sans-serif" font-size="11" font-weight="600" fill="#6B6B72" transform="rotate(-90 40 191)">6,2 м</text>
+        </svg>
+      </div>
+      <div class="toast t1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><span><b>Показания переданы</b>свет и вода, вовремя</span></div>
+      <div class="ledger">
+        <div class="lg-h"><span>Поступления за ноябрь</span><i>зачислено</i></div>
+        <div class="lg-sum">+97 000 ₽</div>
+        <div class="lg-bars"><span style="height:58%;animation-delay:0.00s"></span><span style="height:58%;animation-delay:0.07s"></span><span style="height:58%;animation-delay:0.14s"></span><span style="height:58%;animation-delay:0.21s"></span><span style="height:70%;animation-delay:0.28s"></span><span style="height:70%;animation-delay:0.35s"></span><span style="height:70%;animation-delay:0.42s"></span><span style="height:100%;animation-delay:0.49s"></span></div>
+        <div class="lg-row"><span>Аренда ПВЗ</span><b>+85 000 ₽</b></div>
+        <div class="lg-row"><span>Прибавка к ставке</span><b>+12 000 ₽</b></div>
+      </div>
+      <div class="toast t2"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><b>Договор подписан</b>помещение сдано под ПВЗ</span></div>
+    </div>
+  </div>
+
+  <section style="padding-top:24px">
+    <div class="wrap">
+      <div class="facts">
+        <div class="fact"><b>0 встреч</b><span>Всё онлайн: переписка, звонки, электронная подпись. По всей России.</span></div>
+        <div class="fact"><b>1 агент</b><span>На все вопросы по помещению: от поиска арендатора до претензий.</span></div>
+        <div class="fact"><b>Бесплатно</b><span>Предварительная оценка: подходит помещение или нет.</span></div>
+        <a class="fact" href="dogovor.html"><b>По договору</b><span>Работаю официально как ИП, с актами и чеками. <u>Посмотреть пример →</u></span></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="eyebrow">Услуги</span><h2>Что я делаю</h2></div>
+        <p class="side">Работаю с пунктами выдачи <span class="wb">Wildberries</span> и <span class="oz">Ozon</span> и с любыми другими арендаторами. У <span class="oz">Ozon</span> только партнёрские пункты, фирменных нет.</p>
+      </div>
+      <div class="svc-filter" role="group" aria-label="Маркетплейс">
+        <button type="button" data-mp="all" aria-pressed="true">Все</button>
+        <button type="button" data-mp="wb" aria-pressed="false"><i class="dot wb-dot"></i>Wildberries</button>
+        <button type="button" data-mp="oz" aria-pressed="false"><i class="dot oz-dot"></i>Ozon</button>
+        <button type="button" data-mp="other" aria-pressed="false"><i class="dot other-dot"></i>Другие арендаторы</button>
+      </div>
+      <div class="svc">
+        <div class="svc-list" id="svcList" role="tablist" aria-label="Услуги"></div>
+        <aside class="svc-card" id="svcCard" aria-live="polite"></aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="other" style="padding-top:0">
+    <div class="wrap">
+      <div class="other">
+        <div class="other-head">
+          <span class="eyebrow">Не только ПВЗ</span>
+          <h2>Любое коммерческое помещение</h2>
+          <p>Те же задачи — найти арендатора, поднять ставку, вести счётчики и претензии, расторгнуть договор или продать — решаю для любых помещений и арендаторов.</p>
+          <a class="btn btn-primary" href="#contacts">Обсудить моё помещение</a>
+        </div>
+        <ul class="kinds">
+          <li><span class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9v11h16V9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0"/><path d="M10 20v-5h4v5"/></svg></span><b>Магазины</b><small>Первые этажи, стрит-ритейл</small></li>
+          <li><span class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/></svg></span><b>Офисы</b><small>Кабинеты и этажи целиком</small></li>
+          <li><span class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10h12v5a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17M9 3v3M13 3v3"/></svg></span><b>Сфера услуг</b><small>Кафе, салоны, студии</small></li>
+          <li><span class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6v10H3z"/><path d="M7 20v-6h10v6M7 17h10"/></svg></span><b>Склады</b><small>Хранение и производство</small></li>
+          <li><span class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/></svg></span><b>Другие пункты выдачи</b><small>И службы доставки</small></li>
+          <li><span class="ki"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></svg></span><b>Под любой бизнес</b><small>Подберу, кому подойдёт</small></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="check" style="padding-top:24px">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="eyebrow">Предварительная оценка</span><h2>Подойдёт ли помещение под ПВЗ?</h2></div>
+        <p class="side">Шесть коротких вопросов, меньше минуты. Это прикидка: точный ответ дам после фото и плана.</p>
+      </div>
+      <div class="pv" id="pv">
+        <div class="pv-main">
+          <div class="pv-top"><span id="pvStep">Вопрос 1 из 6</span><div class="pv-bar"><i id="pvBar"></i></div></div>
+          <div class="pv-stage" id="pvStage" aria-live="polite"></div>
+        </div>
+        <ol class="pv-list" id="pvList"></ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="sale">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="eyebrow">Продажа</span><h2>Продажа арендного бизнеса</h2></div>
+        <p class="side">Помещение с арендатором продаётся как готовый доход. Помогаю продать его дороже, чем пустые метры.</p>
+      </div>
+      <div class="sale">
+        <div class="deal on"><span class="pill">С действующим ПВЗ</span><h3>Помещение уже сдано маркетплейсу или партнёру</h3>
+          <ul><li>Считаю окупаемость по текущей ставке</li><li>Проверяю договор аренды для покупателя</li><li>Ищу покупателя и веду сделку до переоформления</li></ul>
+          <a class="go" href="listings.html#pvz">Смотреть объекты <span>→</span></a></div>
+        <div class="deal"><span class="pill">Под ПВЗ</span><h3>Помещение подходит под пункт выдачи, но пока пустое</h3>
+          <ul><li>Подтверждаю, что место подходит под ПВЗ</li><li>Показываю покупателю ожидаемую аренду</li><li>Могу найти арендатора до или после продажи</li></ul>
+          <a class="go" href="listings.html#empty">Смотреть объекты <span>→</span></a></div>
+      </div>
+      <div class="op" id="saleObj" hidden>
+        <div class="op-h"><h3>Сейчас в продаже</h3><a href="listings.html">Все объекты <span>→</span></a></div>
+        <div class="op-list" id="saleList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="why" style="background:linear-gradient(var(--bg),var(--tint) 30%,var(--tint) 70%,var(--bg))">
+    <div class="wrap faq">
+      <div class="head">
+        <span class="eyebrow">Частые вопросы</span>
+        <h2>Почему со мной, а&nbsp;не&nbsp;самому</h2>
+        <p>Ответы на то, что собственники спрашивают чаще всего.</p>
+      </div>
+      <div class="acc">
+        <details open style="background:#fff"><summary>Я и сам могу договориться с <span class="wb">Wildberries</span><span class="pm">+</span></summary>
+          <p class="ans">Можете. Но у арендатора типовой договор и свои юристы, а у вас одно помещение. Я знаю, какие пункты обычно удаётся изменить, какие ставки сейчас по похожим объектам и как подать заявку, чтобы её не отложили.</p></details>
+        <details style="background:#fff"><summary>Зачем платить агенту, если арендатор и так платит<span class="pm">+</span></summary>
+          <p class="ans">Моё вознаграждение привязано к результату. Если ставку поднять не удалось или ПВЗ не открылся, вы не платите за обещания. Обычно прибавка к аренде за год перекрывает мою работу в несколько раз.</p></details>
+        <details style="background:#fff"><summary>Боюсь, что при повышении арендатор съедет<span class="pm">+</span></summary>
+          <p class="ans">Повышение идёт не ультиматумом, а с обоснованием: рынок, индексация, состояние помещения. Если риск потерять арендатора выше выгоды, я скажу об этом прямо и предложу оставить как есть.</p></details>
+        <details style="background:#fff"><summary>Удалённо — это несерьёзно<span class="pm">+</span></summary>
+          <p class="ans">Маркетплейсы сами работают с собственниками через личные кабинеты и электронный документооборот. Я работаю официально как ИП, по агентскому договору, с чеками и актами. Встречаемся, только если по-другому никак.</p></details>
+        <details style="background:#fff"><summary>Счётчики и претензии — мелочь, справлюсь<span class="pm">+</span></summary>
+          <p class="ans">Пока не пропущен срок. Неподанные показания и неотвеченная претензия превращаются в недоплату или штраф. За небольшую абонентскую плату это перестаёт быть вашей заботой.</p></details>
+        <details style="background:#fff"><summary>Дорого<span class="pm">+</span></summary>
+          <p class="ans">Посчитайте месяц простоя пустого помещения или год аренды по старой ставке. Я называю цену до начала работы, и вы сами решаете, выгодно ли это.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="prices">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="eyebrow">Цены</span><h2>Сколько стоит</h2></div>
+        <p class="side">Платите за результат. Сумма и условия фиксируются в агентском договоре до начала работы.</p>
+      </div>
+      <div class="pc-full">
+        <div class="pf-l"><span class="pf-tag">Под ключ</span><h3>Полное ведение</h3><p>Веду помещение целиком, каждый месяц. Вы только получаете аренду и короткий отчёт.</p></div>
+        <div class="pf-r"><div class="pf-v"><b>от <span data-s="price_full">10 000</span> ₽</b><span>в месяц</span></div>
+          <ul><li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>Поиск и смена арендатора</li><li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>Показания счётчиков каждый месяц</li><li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>Контроль оплат и индексации</li><li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>Претензии и переписка</li><li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>Ежемесячный отчёт</li></ul></div>
+      </div>
+      <div class="pc-big">
+        <div class="pc"><span class="pc-k">Открытие ПВЗ</span><div class="pc-v"><b class="tbd" data-s="price_open">XX%</b><span>месячной аренды</span></div><p>Разово, после подписания договора с арендатором. <span class="wb">Wildberries</span> или <span class="oz">Ozon</span>.</p></div>
+        <div class="pc"><span class="pc-k">Повышение аренды</span><div class="pc-v"><b class="tbd" data-s="price_rent">XX%</b><span>от прибавки</span></div><p>От разницы ставок за первый год. Нет прибавки — нет оплаты.</p></div>
+        <div class="pc"><span class="pc-k">Продажа бизнеса</span><div class="pc-v"><b class="tbd" data-s="price_sale">X%</b><span>от сделки</span></div><p>Только при успешной продаже помещения с арендатором.</p></div>
+      </div>
+      <div class="pc-small">
+        <div class="pc"><span class="pc-k">Закрытие ПВЗ</span><div class="pc-v"><b>от <span class="tbd" data-s="price_close">XX XXX</span> ₽</b></div><p>Расторжение, акт возврата, сверка.</p></div>
+        <div class="pc"><span class="pc-k">Претензии и консультации</span><div class="pc-v"><b>от <span class="tbd" data-s="price_claim">X XXX</span> ₽</b></div><p>За документ или консультацию.</p></div>
+        <div class="pc"><span class="pc-k">Показания счётчиков</span><div class="pc-v"><b>от <span class="tbd" data-s="price_meter">X XXX</span> ₽</b><span>в месяц</span></div><p>Сбор, передача, контроль начислений.</p></div>
+      </div>
+      <div class="pc-foot">
+        <ul><li>Оценка помещения бесплатно</li><li>Оплата за результат</li><li>Цена фиксируется в <a href="dogovor.html">договоре</a></li></ul>
+        <div class="pc-btns"><a class="btn btn-soft" href="dogovor.html">Пример договора</a><a class="btn btn-primary" href="#contacts">Узнать цену для моего помещения →</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" style="padding-top:24px">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="eyebrow">Процесс</span><h2>Как идёт работа</h2></div>
+        <p class="side">Без офиса. Связь в мессенджере, документы в электронном виде.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>Заявка</h3><p>Адрес и задача: открыть, поднять аренду, закрыть, продать.</p></li>
+        <li><h3>Фото и документы</h3><p>Фото, план БТИ, выписка ЕГРН. Для действующего ПВЗ — договор.</p></li>
+        <li><h3>Ответ и цена</h3><p>Есть ли шанс, сколько стоит и сколько займёт.</p></li>
+        <li><h3>Агентский договор</h3><p>Подписываем дистанционно, фиксируем задачу и вознаграждение.</p></li>
+        <li><h3>Переговоры</h3><p>Общаюсь с арендатором от вашего имени, держу в курсе.</p></li>
+        <li><h3>Сопровождение</h3><p>Показания, претензии, допсоглашения по мере необходимости.</p></li>
+      </ol>
+      <div class="remote">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="3"/><path d="M8 20h8M12 16v4"/></svg></span>
+        <div><b>Встречаемся лично, только если иначе никак</b><p>Всё остальное решается в переписке и по телефону, поэтому работаю с собственниками из любого города.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacts" style="padding-top:24px">
+    <div class="wrap">
+      <div class="contact">
+        <div>
+          <h2>Напишите адрес помещения и задачу</h2>
+          <p class="sub">Отвечу, подходит ли помещение и чем могу помочь. Первая консультация по вашей ситуации бесплатно.</p>
+        </div>
+        <div class="cards">
+          <div class="cc"><div><div class="l">Telegram</div><div class="v" id="c-tg" data-s="tg">@username</div></div><button class="copy" type="button" data-copy="c-tg">Копировать</button></div>
+          <div class="cc"><div><div class="l">Телефон</div><div class="v" id="c-ph" data-s="phone">+7 900 000-00-00</div></div><button class="copy" type="button" data-copy="c-ph">Копировать</button></div>
+          <div class="cc"><div><div class="l">Почта</div><div class="v" id="c-em" data-s="email">mail@example.ru</div></div><button class="copy" type="button" data-copy="c-em">Копировать</button></div>
+          <div class="cc"><div><div class="l">Реквизиты</div><div class="v" style="font-size:15px" data-s="req">ИП Горин Кирилл Николаевич · ИНН 000000000000</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="wrap">
+  <footer>
+    <span>© 2026 РАНТЬЕ · <span data-s="company">ИП Горин Кирилл Николаевич</span></span>
+    <span>Не являюсь представителем <span class="wb">Wildberries</span> или <span class="oz">Ozon</span>. Работаю по договору с собственником.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var Q=[
+    {t:'Первый этаж',q:'Помещение на первом этаже?',h:'Цоколь и второй этаж маркетплейсы рассматривают редко.',no:'Цоколь или второй этаж берут редко — только при очень хорошем потоке людей.',crit:1},
+    {t:'Отдельный вход',q:'Есть отдельный вход с улицы?',h:'Не через подъезд и не через другой магазин.',no:'Без отдельного входа пункт выдачи почти всегда не согласуют.',crit:1},
+    {t:'Площадь от 30 м²',q:'Площадь от 30 м²?',h:'Нужно место под склад, зону выдачи и примерочные.',no:'Небольшое помещение может подойти под партнёрский пункт — посмотрю.'},
+    {t:'Люди рядом',q:'Рядом жилые дома или поток людей?',h:'Пункт выдачи живёт за счёт тех, кто живёт и ходит рядом.',no:'Без людей рядом пункт не наберёт заказов, и арендатор не придёт.'},
+    {t:'Санузел, свет, тепло',q:'Есть санузел, свет и отопление?',h:'Или их можно сделать до открытия.',no:'Это обычно можно доделать до открытия — подскажу, что именно нужно.'},
+    {t:'Документы',q:'Помещение нежилое, документы в порядке?',h:'Собственность оформлена, нет запрета на коммерческую деятельность.',no:'Сначала нужно привести документы в порядок — помогу разобраться.'}
+  ];
+  var A=[],cur=0,stage=document.getElementById('pvStage'),list=document.getElementById('pvList'),bar=document.getElementById('pvBar'),step=document.getElementById('pvStep');
+  var OK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',NO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>';
+  function done(){return A.filter(function(x){return x!=null;}).length;}
+  function side(){
+    list.innerHTML=Q.map(function(x,i){var st=A[i]===1?'yes':A[i]===0?'no':'';var c=(i===cur&&cur<6)?' cur':'';
+      return '<li><button type="button" data-i="'+i+'" class="'+st+c+'"'+(A[i]==null&&i!==cur&&i>done()?' disabled':'')+'><span class="d">'+(A[i]===1?OK:A[i]===0?NO:i+1)+'</span><span class="t">'+x.t+'</span></button></li>';}).join('');
+    bar.style.width=(done()/6*100)+'%';
+    step.textContent=cur<6?'Вопрос '+(cur+1)+' из 6':'Готово';
+  }
+  function show(){
+    stage.style.animation='none';stage.offsetWidth;stage.style.animation='';
+    if(cur<6){var x=Q[cur];
+      stage.innerHTML='<button type="button" class="pv-back"'+(cur?'':' hidden')+'>← Назад</button><h3>'+x.q+'</h3><p class="hint">'+x.h+'</p>'+
+        '<div class="pv-ans"><button type="button" class="y" data-a="1">Да</button><button type="button" class="n" data-a="0">Нет</button></div>';
+    }else{
+      var yes=A.filter(function(v){return v===1;}).length,crit=Q.some(function(x,i){return x.crit&&A[i]===0;}),v;
+      if(yes===6)v=['good','Подходит','Похоже, помещение подходит','Пришлите фото, план и адрес — проверю и скажу точно, кому и за сколько можно сдать.','Отправить на оценку'];
+      else if(crit)v=['bad','Скорее нет','Шансы невысокие','Без первого этажа или отдельного входа согласовать пункт сложно. Но исключения бывают — напишите, посмотрю.','Уточнить мой случай'];
+      else if(yes>=4)v=['mid','Скорее да','Подходит, но есть вопросы','Часть можно решить до открытия. Посмотрю и скажу, что сделать.','Обсудить помещение'];
+      else v=['bad','Скорее нет','Пока не подходит','Могу посмотреть и подсказать, что поменять, чтобы помещение подошло.','Спросить, что исправить'];
+      var iss=Q.map(function(x,i){return A[i]===0?'<li><b>'+x.t+'</b>'+x.no+'</li>':'';}).join('');
+      stage.innerHTML='<span class="pv-verdict '+v[0]+'">'+v[1]+' · '+yes+' из 6</span><h3>'+v[2]+'</h3><p class="hint">'+v[3]+'</p>'+(iss?'<ul class="pv-issues">'+iss+'</ul>':'')+
+        '<div class="pv-acts"><a class="btn btn-primary" href="#contacts">'+v[4]+' →</a><button type="button" class="btn btn-soft" data-reset>Пройти заново</button></div>';
+    }
+    side();
+  }
+  stage.addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    if(b.dataset.a!=null){A[cur]=+b.dataset.a;var n=-1,k;for(k=cur+1;k<6&&n<0;k++)if(A[k]==null)n=k;for(k=0;k<6&&n<0;k++)if(A[k]==null)n=k;cur=n<0?6:n;show();}
+    else if(b.classList.contains('pv-back')){cur=Math.max(0,cur-1);show();}
+    else if(b.hasAttribute('data-reset')){A=[];cur=0;show();}
+  });
+  list.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.disabled)return;cur=+b.dataset.i;show();});
+  show();
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var el=document.getElementById(b.dataset.copy),t=el.textContent;
+      function flash(s){b.textContent=s;setTimeout(function(){b.textContent='Копировать';},1600);}
+      function sel(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);flash('Выделено');}
+      try{navigator.clipboard.writeText(t).then(function(){flash('Скопировано');},sel);}catch(e){sel();}
+    });
+  });
+})();
+</script>
+<script>
+(function(){
+  var I={
+    full:'<path d="M12 3l8.5 4.5L12 12 3.5 7.5z"/><path d="M3.5 12L12 16.5 20.5 12"/><path d="M3.5 16.5L12 21l8.5-4.5"/>',
+    home:'<path d="M3 10.5L12 4l9 6.5V20H3z"/><path d="M9.5 20v-6h5v6"/>',
+    team:'<circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.8-4-5.6"/>',
+    search:'<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>',
+    up:'<path d="M4 17l6-6 4 4 6-7"/><path d="M15 8h5v5"/>',
+    meter:'<circle cx="12" cy="13" r="7"/><path d="M12 13l3-3M9 3h6"/>',
+    doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h4"/>',
+    chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>',
+    shop:'<path d="M4 9l1.5-5h13L20 9"/><path d="M4 9v11h16V9"/><path d="M10 20v-5h4v5"/>',
+    exit:'<path d="M5 4h10v16H5z"/><path d="M15 12h5M17.5 9.5L20 12l-2.5 2.5M11 12h.01"/>'
+  };
+  var WB='<span class="wb">Wildberries</span>',OZ='<span class="oz">Ozon</span>',OT='Другие';
+  var S=[
+    {ic:'full',t:'Полное ведение',s:'Всё по помещению — под ключ',mp:['wb','oz','other'],
+     d:'Беру помещение на себя целиком: арендатор, показания, ставка, претензии и документы. Вы получаете аренду и короткий отчёт раз в месяц.',
+     g:['Поиск и смена арендатора','Показания, оплаты и индексация','Претензии и переписка','Отчёт каждый месяц']},
+    {ic:'home',t:'Открытие фирменного ПВЗ',s:'Подаю помещение напрямую маркетплейсу',mp:['wb'],
+     d:'Подаю ваше помещение '+WB+' как фирменный пункт выдачи и веду его до подписанного договора.',
+     g:['Проверяю, подходит ли помещение','Подаю заявку и отвечаю на вопросы','Согласую условия договора аренды']},
+    {ic:'team',t:'Открытие партнёрского ПВЗ',s:'Нахожу ИП, который откроет пункт',mp:['wb','oz'],
+     d:'Подбираю предпринимателя, который откроет партнёрский пункт '+WB+' или '+OZ+' в вашем помещении.',
+     g:['Ищу и проверяю партнёра','Обсуждаю ставку и сроки','Оформляю договор аренды']},
+    {ic:'shop',t:'Сдача другим арендаторам',s:'Магазины, офисы, услуги, склады',mp:['other'],
+     d:'Если пункт выдачи не подходит или не нужен, найду другого арендатора под ваше помещение и доведу до договора.',
+     g:['Подскажу, кому подойдёт помещение','Найду и проверю арендатора','Согласую ставку и договор']},
+    {ic:'search',t:'Оценка помещения',s:'Ответ «подходит / нет» — бесплатно',mp:['wb','oz','other'],
+     d:'По фото, плану и адресу коротко отвечаю, подходит ли помещение под пункт выдачи или кому ещё его можно сдать.',
+     g:['Ответ «подходит под ПВЗ» или «нет»','Какой арендатор подойдёт','Что доделать, чтобы взяли']},
+    {ic:'up',t:'Повышение аренды',s:'Обоснование и переговоры',mp:['wb','oz','other'],
+     d:'Готовлю обоснование по рынку, индексации и состоянию помещения и договариваюсь с арендатором.',
+     g:['Разбор текущего договора','Аргументы для новой ставки','Переговоры без ультиматумов']},
+    {ic:'meter',t:'Показания счётчиков',s:'Каждый месяц, в срок',mp:['wb','oz','other'],
+     d:'Собираю показания электричества и воды и передаю арендатору, чтобы вы об этом не думали.',
+     g:['Сбор показаний каждый месяц','Передача арендатору в срок','Контроль начислений']},
+    {ic:'doc',t:'Претензии',s:'Отвечаю и составляю ваши',mp:['wb','oz','other'],
+     d:'Разбираю претензии арендатора, готовлю ответ и при необходимости составляю вашу претензию.',
+     g:['Разбор претензии по договору','Ответ в срок','Ваша претензия, если есть основания']},
+    {ic:'chat',t:'Консультации по договорам',s:'Условия, сроки, индексация',mp:['wb','oz','other'],
+     d:'Объясняю, что значит каждый пункт договора аренды и что можно изменить до подписания.',
+     g:['Разбор условий и рисков','Сроки и индексация','Порядок расторжения']},
+    {ic:'exit',t:'Закрытие ПВЗ и расторжение',s:'Без долгов и споров',mp:['wb','oz','other'],
+     d:'Провожу расторжение, принимаю помещение по акту и сверяю взаиморасчёты с арендатором.',
+     g:['Расторжение по договору','Акт возврата помещения','Сверка расчётов и показаний']}
+  ];
+  var list=document.getElementById('svcList'),card=document.getElementById('svcCard'),cur=0,mpf='all';
+  var svg=function(k){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+I[k]+'</svg>';};
+  S.forEach(function(x,i){
+    var b=document.createElement('button');b.type='button';b.className='srow';b.setAttribute('role','tab');b.dataset.i=i;
+    b.innerHTML='<span class="si">'+svg(x.ic)+'</span><span><b>'+x.t+'</b><small>'+x.s+'</small></span><span class="mk">'+x.mp.map(function(m){return '<i class="dot '+m+'-dot" title="'+({wb:'Wildberries',oz:'Ozon',other:'Другие арендаторы'})[m]+'"></i>';}).join('')+'</span><svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    b.addEventListener('click',function(){show(i);});
+    b.addEventListener('mouseenter',function(){if(matchMedia('(hover:hover) and (min-width:901px)').matches)show(i);});
+    list.appendChild(b);
+  });
+  var rows=[].slice.call(list.children);
+  function show(i){
+    if(rows[i].classList.contains('dim'))return;
+    if(i===cur&&card.innerHTML)return;
+    cur=i;var x=S[i];
+    rows.forEach(function(r,k){r.setAttribute('aria-selected',k===i?'true':'false');});
+    card.innerHTML='<span class="big">'+svg(x.ic)+'</span><h3>'+x.t+'</h3><p class="desc">'+x.d+'</p><ul class="gets">'+x.g.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>'+
+      '<div class="foot"><div class="mps"><span class="'+(x.mp.indexOf('wb')<0?'no':'')+'">'+WB+'</span><span class="'+(x.mp.indexOf('oz')<0?'no':'')+'">'+OZ+'</span><span class="'+(x.mp.indexOf('other')<0?'no':'')+'">'+OT+'</span></div><a class="btn btn-primary" href="#contacts">Обсудить</a></div>';
+    card.classList.remove('swap');void card.offsetWidth;card.classList.add('swap');
+    if(matchMedia('(max-width:900px)').matches){rows[i].after(card);}else if(card.parentNode!==list.parentNode){list.parentNode.appendChild(card);}
+  }
+  document.querySelectorAll('.svc-filter button').forEach(function(b){b.addEventListener('click',function(){
+    mpf=b.dataset.mp;
+    document.querySelectorAll('.svc-filter button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+    rows.forEach(function(r,k){r.classList.toggle('dim',mpf!=='all'&&S[k].mp.indexOf(mpf)<0);});
+    if(rows[cur].classList.contains('dim')){var n=rows.findIndex(function(r){return !r.classList.contains('dim');});card.innerHTML='';show(n);}
+  });});
+  addEventListener('resize',function(){var c=cur;card.innerHTML='';show(c);});
+  show(0);
+})();
+</script>
+<script src="contacts.js"></script>
+<script>
+(function(){
+  var box=document.getElementById('saleObj'),list=document.getElementById('saleList');
+  if(!box)return;
+  function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function rub(n){return Math.round(n).toLocaleString('ru-RU').replace(/\u00a0/g,' ')+' ₽';}
+  function mln(n){return n>=1e6?(n/1e6).toLocaleString('ru-RU',{maximumFractionDigits:2})+' млн ₽':rub(n);}
+  var HOME='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V20H4z"/><path d="M9.5 20v-6h5v6"/></svg>';
+  fetch('/api/objects',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).catch(function(){return fetch('data/objects.json').then(function(r){if(!r.ok)throw 0;return r.json();});}).then(function(A){
+    A=(A||[]).filter(function(o){return o.status!=='hidden'&&o.status!=='sold'&&o.price;});
+    A.sort(function(a,b){return (a.status==='example')-(b.status==='example')||(b.updated||0)-(a.updated||0);});
+    A=A.slice(0,3);if(!A.length)return;
+    list.innerHTML=A.map(function(o){
+      var ph=o.photos&&o.photos.length?'<img src="'+esc(o.photos[0])+'" alt="" loading="lazy">':HOME;
+      return '<a class="oc" href="listings.html#o'+o.id+'"><div class="oc-ph">'+ph+'<span class="oc-t">'+(o.type==='pvz'?'С ПВЗ':'Под ПВЗ')+'</span>'+(o.status==='example'?'<span class="oc-t ex">Пример</span>':'')+'</div>'+
+        '<div class="oc-b"><b>'+mln(o.price)+'</b><small>'+(o.area?o.area+' м² · ':'')+esc([o.city,o.addr].filter(Boolean).join(', '))+'</small>'+
+        (o.rent?'<i>+'+rub(o.rent)+' в месяц</i>':'')+'</div></a>';
+    }).join('');
+    box.hidden=false;
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>

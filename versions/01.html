@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Горин · Агент по ПВЗ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Агент собственников помещений под пункты выдачи Wildberries и Ozon. Повышение аренды, открытие и закрытие ПВЗ, показания счётчиков, претензии, продажа арендного бизнеса. Работаю удалённо.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: план помещения как язык страницы — чертёжные линии, размеры в м², таблица «WB / Ozon», чек-лист да/нет */
+:root{
+  --bg:#EDF0EC;          /* бетонный пол, холодный с зеленцой */
+  --surface:#F8FAF7;
+  --ink:#16211D;         /* графит с зелёным уклоном */
+  --muted:#5A6862;
+  --line:#C9D1CB;
+  --accent:#E3A21A;      /* сигнальный жёлтый — ключи, бирки, разметка */
+  --accent-ink:#1B1505;
+  --ok:#2F7D53;
+  --no:#B4482F;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111714;--surface:#18201C;--ink:#E5EAE6;--muted:#9AA8A1;--line:#2B3631;
+  --accent:#EDB23A;--accent-ink:#1B1505;--ok:#5CB585;--no:#E07A5F;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111714;--surface:#18201C;--ink:#E5EAE6;--muted:#9AA8A1;--line:#2B3631;
+  --accent:#EDB23A;--accent-ink:#1B1505;--ok:#5CB585;--no:#E07A5F;color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:48px 48px;background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.1;text-wrap:balance;margin:0;letter-spacing:-.01em}
+h2{font-size:clamp(26px,4vw,40px)}
+h3{font-size:18px;font-weight:500;line-height:1.3}
+p{margin:0}
+.label{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:700;font-size:15px}
+.logo i{display:inline-grid;place-items:center;width:32px;height:32px;background:var(--accent);color:var(--accent-ink);font-style:normal;font-size:14px;border-radius:3px}
+nav{display:flex;gap:22px;font-size:15px}
+nav a{text-decoration:none;color:var(--muted)}
+nav a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 16px/1 var(--body);padding:14px 20px;border-radius:4px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);text-decoration:none;cursor:pointer;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.small{padding:10px 14px;font-size:14px}
+@media (max-width:820px){nav{display:none}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding-block:64px 56px}
+.hero h1{font-size:clamp(34px,5.6vw,64px)}
+.hero h1 mark{background:var(--accent);color:var(--accent-ink);padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.hero .lead{margin-top:22px;font-size:19px;max-width:34em;color:var(--muted)}
+.hero .lead b{color:var(--ink);font-weight:600}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.who{margin-top:34px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--mono);font-size:13px;border:1px solid var(--line);background:var(--surface);padding:6px 10px;border-radius:3px}
+.plan{background:var(--surface);border:1px solid var(--line);padding:18px;border-radius:4px;min-width:0}
+.plan svg{width:100%;height:auto;display:block}
+.plan .cap{display:flex;justify-content:space-between;gap:8px;margin-top:10px}
+@media (max-width:860px){.hero{grid-template-columns:1fr;padding-block:40px}}
+
+section{padding-block:72px}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:32px}
+.sec-head p{max-width:30em;color:var(--muted)}
+
+/* scheme */
+.scheme{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:0}
+.node{background:var(--surface);border:1px solid var(--line);padding:22px;border-radius:4px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.node.me{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.node.me .label{color:color-mix(in srgb,var(--bg) 70%,transparent)}
+.node ul{margin:4px 0 0;padding-left:18px;font-size:15px}
+.arrow{display:grid;place-items:center;padding:0 10px;font-family:var(--mono);color:var(--muted);font-size:22px}
+@media (max-width:760px){.scheme{grid-template-columns:1fr}.arrow{transform:rotate(90deg);padding:6px 0}}
+
+/* services table */
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:4px}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th,td{text-align:left;padding:16px 20px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+thead th{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.c,th.c{text-align:center;width:110px}
+td .t{font-weight:600}
+td .d{color:var(--muted);font-size:15px;margin-top:2px}
+.y,.n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;font-family:var(--mono);font-size:14px}
+.y{background:var(--ok);color:var(--surface)}
+.n{border:1.5px dashed var(--line);color:var(--muted)}
+.note{margin-top:14px;font-size:14px;color:var(--muted)}
+
+/* check */
+.check{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:start}
+.qs{background:var(--surface);border:1px solid var(--line);border-radius:4px}
+.q{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.q:last-child{border-bottom:0}
+.q p{min-width:0}
+.q small{display:block;color:var(--muted);font-size:14px}
+.yn{display:flex;flex-shrink:0;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
+.yn input{position:absolute;opacity:0;pointer-events:none}
+.yn label{font:600 14px/1 var(--mono);padding:10px 14px;cursor:pointer;user-select:none}
+.yn label+input+label{border-left:1.5px solid var(--ink)}
+.yn input:focus-visible+label{outline:3px solid var(--accent);outline-offset:-3px}
+.yn input[value="1"]:checked+label{background:var(--ok);color:var(--surface)}
+.yn input[value="0"]:checked+label{background:var(--no);color:var(--surface)}
+.verdict{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);background:var(--ink);color:var(--bg);border-radius:4px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.verdict .score{font-family:var(--display);font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.verdict .score span{font-size:22px;opacity:.6}
+.verdict .msg{font-size:17px}
+.verdict .label{color:color-mix(in srgb,var(--bg) 65%,transparent)}
+.verdict .btn{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);align-self:flex-start}
+.meter{height:8px;background:color-mix(in srgb,var(--bg) 20%,transparent);border-radius:4px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+@media (max-width:860px){.check{grid-template-columns:1fr}.verdict{position:static}}
+@media (max-width:480px){.q{flex-direction:column;align-items:flex-start}}
+
+/* sale */
+.sale{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:28px;display:flex;flex-direction:column;gap:12px}
+.card.hl{border:2px solid var(--accent)}
+.card ul{margin:0;padding-left:18px;color:var(--muted)}
+.card ul li+li{margin-top:4px}
+@media (max-width:760px){.sale{grid-template-columns:1fr}}
+
+/* steps */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.steps li{background:var(--surface);padding:24px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.steps .num{font-family:var(--mono);color:var(--accent);font-weight:500;font-size:14px}
+.steps p{color:var(--muted);font-size:15px}
+@media (max-width:860px){.steps{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.steps{grid-template-columns:1fr}}
+.remote{margin-top:24px;display:flex;gap:16px;align-items:flex-start;padding:20px 22px;border:1.5px dashed var(--ink);border-radius:4px}
+.remote b{font-family:var(--display);font-weight:500}
+
+/* contacts */
+.contact{background:var(--ink);color:var(--bg);border-radius:4px;padding:40px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.contact .label{color:color-mix(in srgb,var(--bg) 65%,transparent)}
+.contact h2{color:var(--bg)}
+.contact p.sub{margin-top:14px;opacity:.8;max-width:28em}
+.rows{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid color-mix(in srgb,var(--bg) 20%,transparent);padding-bottom:14px;flex-wrap:wrap}
+.row .v{font-family:var(--mono);font-size:17px;user-select:all;word-break:break-all}
+.copy{font:500 13px/1 var(--mono);background:transparent;color:var(--bg);border:1px solid color-mix(in srgb,var(--bg) 40%,transparent);padding:8px 10px;border-radius:3px;cursor:pointer}
+.copy:hover{border-color:var(--accent);color:var(--accent)}
+@media (max-width:760px){.contact{grid-template-columns:1fr;padding:28px 22px}}
+
+footer{padding-block:32px 48px;color:var(--muted);font-size:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="#top"><i>КГ</i>Горин · ПВЗ</a>
+    <nav>
+      <a href="#scheme">Как это работает</a>
+      <a href="#services">Услуги</a>
+      <a href="#check">Проверка помещения</a>
+      <a href="#sale">Продажа бизнеса</a>
+    </nav>
+    <a class="btn small" href="#contacts">Написать</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <p class="label">Агент собственников помещений · Wildberries и Ozon</p>
+      <h1 style="margin-top:16px">Сдам ваше помещение <mark>под&nbsp;ПВЗ</mark> и&nbsp;буду вести его дальше</h1>
+      <p class="lead">Помогаю собственникам договариваться с <b>ООО&nbsp;«РВБ» (Wildberries)</b>, Ozon и&nbsp;партнёрскими ИП: открыть пункт выдачи, поднять аренду, закрыть вопросы по&nbsp;счётчикам и&nbsp;претензиям. Работаю <b>дистанционно</b>, по&nbsp;всей России.</p>
+      <div class="cta">
+        <a class="btn" href="#check">Проверить помещение за минуту</a>
+        <a class="btn ghost" href="#contacts">Связаться</a>
+      </div>
+      <div class="who">
+        <span class="chip">новые помещения</span>
+        <span class="chip">действующие ПВЗ</span>
+        <span class="chip">фирменные и партнёрские</span>
+      </div>
+    </div>
+    <figure class="plan" style="margin:0" aria-label="Схема типового помещения под пункт выдачи">
+      <svg viewBox="0 0 400 320" role="img">
+        <title>План помещения 6,2 × 7,5 м</title>
+        <g fill="none" stroke="var(--ink)" stroke-width="6">
+          <path d="M60 40 H340 V280 H210"/>
+          <path d="M150 280 H60 V40"/>
+        </g>
+        <!-- дверь -->
+        <path d="M150 280 A60 60 0 0 1 210 220" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <line x1="150" y1="280" x2="150" y2="220" stroke="var(--ink)" stroke-width="2"/>
+        <!-- зоны -->
+        <rect x="70" y="50" width="120" height="110" fill="var(--accent)" opacity=".22"/>
+        <text x="130" y="100" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="var(--ink)">СКЛАД</text>
+        <text x="130" y="118" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--muted)">стеллажи</text>
+        <line x1="190" y1="50" x2="190" y2="160" stroke="var(--ink)" stroke-width="2"/>
+        <rect x="270" y="50" width="60" height="60" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <text x="300" y="84" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--ink)">С/У</text>
+        <rect x="230" y="190" width="40" height="40" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <rect x="280" y="190" width="40" height="40" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <text x="275" y="250" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--muted)">примерочные</text>
+        <text x="250" y="160" text-anchor="middle" font-family="Unbounded, sans-serif" font-weight="700" font-size="22" fill="var(--ink)">ПВЗ</text>
+        <!-- размеры -->
+        <g stroke="var(--muted)" stroke-width="1">
+          <line x1="60" y1="20" x2="340" y2="20"/><line x1="60" y1="14" x2="60" y2="26"/><line x1="340" y1="14" x2="340" y2="26"/>
+          <line x1="365" y1="40" x2="365" y2="280"/><line x1="359" y1="40" x2="371" y2="40"/><line x1="359" y1="280" x2="371" y2="280"/>
+        </g>
+        <text x="200" y="14" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="var(--muted)">7,5 м</text>
+        <text x="385" y="164" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="var(--muted)" transform="rotate(90 385 164)">6,2 м</text>
+        <text x="180" y="304" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="var(--ink)">▲ вход с улицы</text>
+      </svg>
+      <figcaption class="cap"><span class="label">Типовой план</span><span class="label">≈ 46,5 м² · 1 этаж</span></figcaption>
+    </figure>
+  </div>
+
+  <section id="scheme">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Кто с кем работает</h2>
+        <p>Я на стороне собственника. Арендатор получает понятного контрагента, вы получаете аренду без лишней переписки.</p>
+      </div>
+      <div class="scheme">
+        <div class="node">
+          <span class="label">Собственник</span>
+          <h3>Вы</h3>
+          <p style="color:var(--muted);font-size:15px">Владелец помещения: пустого, только что купленного или уже сданного под пункт выдачи.</p>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node me">
+          <span class="label">Агент</span>
+          <h3>ИП Горин Кирилл Николаевич</h3>
+          <p style="font-size:15px;opacity:.85">Переговоры, документы, показания, претензии. Всё онлайн.</p>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node">
+          <span class="label">Арендатор</span>
+          <h3>Маркетплейс или партнёр</h3>
+          <ul>
+            <li>ООО «РВБ» (Wildberries)</li>
+            <li>Ozon</li>
+            <li>ИП — владельцы партнёрских ПВЗ</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Что я делаю</h2>
+        <p>С Ozon всё то же самое, кроме фирменных пунктов: у Ozon работают партнёрские.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Услуга</th><th class="c">Wildberries</th><th class="c">Ozon</th></tr></thead>
+          <tbody>
+            <tr><td><div class="t">Повышение арендной ставки</div><div class="d">Готовлю обоснование и веду переговоры с арендатором по действующему договору.</div></td><td class="c"><span class="y" aria-label="да">✓</span></td><td class="c"><span class="y" aria-label="да">✓</span></td></tr>
+            <tr><td><div class="t">Открытие нового фирменного ПВЗ</div><div class="d">Подаю помещение, сопровождаю согласование и подписание договора.</div></td><td class="c"><span class="y" aria-label="да">✓</span></td><td class="c"><span class="n" aria-label="нет">—</span></td></tr>
+            <tr><td><div class="t">Открытие партнёрского ПВЗ</div><div class="d">Нахожу ИП-партнёра под ваше помещение и оформляю аренду.</div></td><td class="c"><span class="y" aria-label="да">✓</span></td><td class="c"><span class="y" aria-label="да">✓</span></td></tr>
+            <tr><td><div class="t">Предварительная оценка помещения</div><div class="d">Быстрый ответ «подходит / не подходит» по фото, плану и адресу.</div></td><td class="c"><span class="y" aria-label="да">✓</span></td><td class="c"><span class="y" aria-label="да">✓</span></td></tr>
+            <tr><td><div class="t">Показания счётчиков каждый месяц</div><div class="d">Собираю показания электричества и воды и передаю арендатору в срок.</div></td><td class="c"><span class="y" aria-label="да">✓</span></td><td class="c"><span class="y" aria-label="да">✓</span></td></tr>
+            <tr><td><div class="t">Претензии</div><div class="d">Отвечаю на претензии арендатора и составляю ваши.</div></td><td class="c"><span class="y" aria-label="да">✓</span></td><td class="c"><span class="y" aria-label="да">✓</span></td></tr>
+            <tr><td><div class="t">Консультации по договору аренды</div><div class="d">Разбираю условия, сроки, индексацию и порядок расторжения.</div></td><td class="c"><span class="y" aria-label="да">✓</span></td><td class="c"><span class="y" aria-label="да">✓</span></td></tr>
+            <tr><td><div class="t">Закрытие ПВЗ</div><div class="d">Расторжение, возврат помещения, акты и взаиморасчёты.</div></td><td class="c"><span class="y" aria-label="да">✓</span></td><td class="c"><span class="y" aria-label="да">✓</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Стоимость зависит от задачи и города. Напишите, что нужно, и я назову цену до начала работы.</p>
+    </div>
+  </section>
+
+  <section id="check">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Подойдёт ли помещение под ПВЗ?</h2>
+        <p>Шесть вопросов «да / нет». Это прикидка: точный ответ дам после фото и плана.</p>
+      </div>
+      <div class="check">
+        <form class="qs" id="quiz" onsubmit="return false">
+          <div class="q"><p>Помещение на первом этаже?<small>Цоколь и второй этаж рассматривают редко</small></p>
+            <div class="yn"><input type="radio" name="q1" id="q1y" value="1"><label for="q1y">Да</label><input type="radio" name="q1" id="q1n" value="0"><label for="q1n">Нет</label></div></div>
+          <div class="q"><p>Есть отдельный вход с улицы?<small>Не через подъезд и не через другой магазин</small></p>
+            <div class="yn"><input type="radio" name="q2" id="q2y" value="1"><label for="q2y">Да</label><input type="radio" name="q2" id="q2n" value="0"><label for="q2n">Нет</label></div></div>
+          <div class="q"><p>Площадь от 30 м²?<small>Нужно место под склад, выдачу и примерочные</small></p>
+            <div class="yn"><input type="radio" name="q3" id="q3y" value="1"><label for="q3y">Да</label><input type="radio" name="q3" id="q3n" value="0"><label for="q3n">Нет</label></div></div>
+          <div class="q"><p>Рядом жилые дома или поток людей?<small>Пункт живёт за счёт тех, кто рядом</small></p>
+            <div class="yn"><input type="radio" name="q4" id="q4y" value="1"><label for="q4y">Да</label><input type="radio" name="q4" id="q4n" value="0"><label for="q4n">Нет</label></div></div>
+          <div class="q"><p>Есть санузел, свет и отопление?<small>Или их можно сделать до открытия</small></p>
+            <div class="yn"><input type="radio" name="q5" id="q5y" value="1"><label for="q5y">Да</label><input type="radio" name="q5" id="q5n" value="0"><label for="q5n">Нет</label></div></div>
+          <div class="q"><p>Помещение нежилое, документы в порядке?<small>Собственность оформлена, нет запрета на коммерцию</small></p>
+            <div class="yn"><input type="radio" name="q6" id="q6y" value="1"><label for="q6y">Да</label><input type="radio" name="q6" id="q6n" value="0"><label for="q6n">Нет</label></div></div>
+        </form>
+        <aside class="verdict" aria-live="polite">
+          <span class="label">Предварительно</span>
+          <div class="score" id="score">0<span>/6</span></div>
+          <div class="meter"><i id="meter"></i></div>
+          <p class="msg" id="msg">Ответьте на вопросы слева.</p>
+          <a class="btn" href="#contacts" id="vbtn">Прислать фото и адрес</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="sale">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Продажа арендного бизнеса</h2>
+        <p>Помещение с арендатором продаётся как готовый доход. Помогаю продать его дороже, чем пустые метры.</p>
+      </div>
+      <div class="sale">
+        <div class="card hl">
+          <span class="label">С действующим ПВЗ</span>
+          <h3>Помещение уже сдано маркетплейсу или партнёру</h3>
+          <ul>
+            <li>Считаю окупаемость по текущей ставке</li>
+            <li>Проверяю договор аренды для покупателя</li>
+            <li>Ищу покупателя и веду сделку до переоформления</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="label">Под ПВЗ</span>
+          <h3>Помещение подходит под пункт выдачи, но пока пустое</h3>
+          <ul>
+            <li>Подтверждаю, что место подходит под ПВЗ</li>
+            <li>Показываю покупателю ожидаемую аренду</li>
+            <li>Могу найти арендатора до или после продажи</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Как идёт работа</h2>
+        <p>Без офиса и встреч. Связь в мессенджере, документы в электронном виде.</p>
+      </div>
+      <ol class="steps">
+        <li><span class="num">01</span><h3>Заявка</h3><p>Пишете адрес и задачу: открыть, поднять аренду, закрыть, продать.</p></li>
+        <li><span class="num">02</span><h3>Фото и документы</h3><p>Присылаете фото, план БТИ и выписку ЕГРН. Для действующего ПВЗ — договор.</p></li>
+        <li><span class="num">03</span><h3>Ответ и цена</h3><p>Говорю, есть ли шанс, сколько это стоит и сколько займёт.</p></li>
+        <li><span class="num">04</span><h3>Агентский договор</h3><p>Подписываем дистанционно. Фиксируем задачу и вознаграждение.</p></li>
+        <li><span class="num">05</span><h3>Переговоры</h3><p>Общаюсь с арендатором от вашего имени, держу вас в курсе.</p></li>
+        <li><span class="num">06</span><h3>Сопровождение</h3><p>Показания, претензии, допсоглашения — по мере необходимости.</p></li>
+      </ol>
+      <div class="remote">
+        <span class="label" style="flex-shrink:0;padding-top:3px">Встречи</span>
+        <p><b>Лично встречаемся только если иначе никак.</b> Всё остальное решается по переписке и звонкам, поэтому работаю с собственниками из любого города.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacts">
+    <div class="wrap">
+      <div class="contact">
+        <div>
+          <span class="label">Контакты</span>
+          <h2 style="margin-top:12px">Напишите адрес помещения и задачу</h2>
+          <p class="sub">Отвечу, подходит ли помещение и чем могу помочь. Первая консультация по вашей ситуации — бесплатно.</p>
+        </div>
+        <div class="rows">
+          <div class="row"><div><div class="label">Telegram</div><div class="v" id="c-tg">@username</div></div><button class="copy" type="button" data-copy="c-tg">Копировать</button></div>
+          <div class="row"><div><div class="label">Телефон</div><div class="v" id="c-ph">+7 900 000-00-00</div></div><button class="copy" type="button" data-copy="c-ph">Копировать</button></div>
+          <div class="row"><div><div class="label">Почта</div><div class="v" id="c-em">mail@example.ru</div></div><button class="copy" type="button" data-copy="c-em">Копировать</button></div>
+          <div class="row" style="border:0"><div><div class="label">Реквизиты</div><div class="v" style="font-size:14px">ИП Горин Кирилл Николаевич · ИНН 000000000000</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="wrap">
+  <footer>
+    <span>© 2026 ИП Горин К. Н. · Агент собственников помещений</span>
+    <span>Не являюсь представителем Wildberries или Ozon. Работаю по договору с собственником.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var form=document.getElementById('quiz'),score=document.getElementById('score'),meter=document.getElementById('meter'),msg=document.getElementById('msg'),vbtn=document.getElementById('vbtn');
+  function upd(){
+    var yes=0,ans=0;
+    for(var i=1;i<=6;i++){var c=form.querySelector('input[name=q'+i+']:checked');if(c){ans++;if(c.value==='1')yes++;}}
+    score.innerHTML=yes+'<span>/6</span>';
+    meter.style.width=(yes/6*100)+'%';
+    var critical=['q1','q2'].some(function(n){var c=form.querySelector('input[name='+n+']:checked');return c&&c.value==='0';});
+    if(ans<6){msg.textContent='Отвечено '+ans+' из 6.';vbtn.textContent='Прислать фото и адрес';return;}
+    if(yes===6){msg.textContent='Похоже, подходит. Пришлите фото, план и адрес — дам точный ответ.';vbtn.textContent='Отправить на оценку';}
+    else if(critical){msg.textContent='Скорее нет: без первого этажа и отдельного входа шансы низкие. Но напишите — исключения бывают.';vbtn.textContent='Уточнить по моему случаю';}
+    else if(yes>=4){msg.textContent='Скорее да, есть вопросы. Часть можно решить до открытия — обсудим.';vbtn.textContent='Обсудить помещение';}
+    else{msg.textContent='Скорее нет. Могу посмотреть и сказать, что поменять, чтобы помещение подошло.';vbtn.textContent='Спросить, что исправить';}
+  }
+  form.addEventListener('change',upd);upd();
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var el=document.getElementById(b.dataset.copy),t=el.textContent;
+      function done(){b.textContent='Скопировано';setTimeout(function(){b.textContent='Копировать';},1600);}
+      function sel(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Выделено';setTimeout(function(){b.textContent='Копировать';},1600);}
+      try{navigator.clipboard.writeText(t).then(done,sel);}catch(e){sel();}
+    });
+  });
+})();
+</script>
+
+</html>

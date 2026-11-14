@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Горин · Чат с агентом</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap">
+<style>
+/* Вариант «Чат»: сайт — это переписка с агентом. Посетитель отвечает кнопками, в конце получает готовую заявку. */
+:root{
+  --bg:#FFFFFF;--chat:#FAF7FD;--bubble:#F1E8FA;--ink:#1B1322;--muted:#7A6F85;--line:#ECE4F3;
+  --accent:#8B1FC2;--accent-hi:#A43BDB;--on:#fff;--hl:#FFF0A0;
+  --font:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:22px;--rb:24px;color-scheme:light;
+}
+@supports (corner-shape: squircle){:root{--r:34px;--rb:30px}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:600 16px/1.5 var(--font)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent-hi);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.page{max-width:1180px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:340px 1fr;gap:20px;min-height:100vh}
+@media (max-width:900px){.page{grid-template-columns:1fr}}
+
+/* profile */
+.profile{position:sticky;top:20px;align-self:start;display:flex;flex-direction:column;gap:12px}
+.card{border:1px solid var(--line);border-radius:var(--r);corner-shape:squircle;padding:22px}
+.me{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;background:linear-gradient(180deg,#F5ECFC,#fff 70%);border-color:transparent}
+.ava{width:88px;height:88px;border-radius:30px;corner-shape:squircle;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:30px;position:relative}
+@supports (corner-shape: squircle){.ava{border-radius:44px}}
+.ava::after{content:"";position:absolute;right:4px;bottom:4px;width:18px;height:18px;border-radius:50%;background:#22B565;border:3px solid #fff}
+.me h1{font-size:22px;font-weight:900;margin:8px 0 0;letter-spacing:-.01em}
+.me p{color:var(--muted);font-size:15px;margin:0}
+.tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:8px}
+.tags span{font-size:13px;font-weight:800;padding:6px 11px;border-radius:999px;background:#fff;color:var(--accent);border:1px solid var(--line)}
+.card h2{font-size:15px;font-weight:900;margin:0 0 10px;color:var(--accent)}
+.svc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.svc li{display:flex;justify-content:space-between;gap:8px}
+.svc i{font-style:normal;font-size:12px;font-weight:800;color:var(--muted);white-space:nowrap}
+.contact{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:15px}
+.contact:first-of-type{border-top:0}
+.contact small{display:block;color:var(--muted);font-size:12px}
+.contact b{user-select:all}
+.mini{border:0;background:var(--bubble);color:var(--accent);font-weight:800;font-size:13px;padding:8px 12px;border-radius:999px;cursor:pointer}
+@media (max-width:900px){.profile{position:static}.profile .card:not(.me){display:none}}
+
+/* chat */
+.chat{background:var(--chat);border-radius:calc(var(--r) + 8px);corner-shape:squircle;display:flex;flex-direction:column;min-height:640px;overflow:hidden}
+.chead{display:flex;align-items:center;gap:12px;padding:16px 22px;background:#fff;border-bottom:1px solid var(--line)}
+.chead .a{width:42px;height:42px;border-radius:15px;corner-shape:squircle;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900}
+.chead b{display:block;font-weight:900}
+.chead small{color:#22A05C;font-weight:800}
+.log{flex:1;padding:24px clamp(14px,3vw,32px);display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.msg{max-width:min(560px,86%);padding:14px 18px;border-radius:var(--rb);corner-shape:squircle;font-size:16px;line-height:1.5;animation:pop .25s ease}
+.msg.in{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:8px}
+.msg.out{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:8px}
+.msg ul{margin:8px 0 0;padding-left:20px}
+.msg li{margin:3px 0}
+.msg .price{display:block;margin-top:10px;padding:10px 14px;border-radius:16px;background:var(--bubble);font-weight:800}
+.fill{background:var(--hl);color:#3A2E00;border-radius:6px;padding:0 .2em}
+.typing{align-self:flex-start;background:#fff;border:1px solid var(--line);padding:14px 18px;border-radius:var(--rb);display:flex;gap:5px}
+.typing i{width:7px;height:7px;border-radius:50%;background:#C8B6D8;animation:dot 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:none}30%{transform:translateY(-4px)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+.summary{align-self:stretch;background:#fff;border:2px solid var(--accent);border-radius:var(--rb);corner-shape:squircle;padding:18px;display:flex;flex-direction:column;gap:12px;animation:pop .25s ease}
+.summary pre{margin:0;white-space:pre-wrap;font:700 14px/1.5 var(--font);background:var(--chat);padding:14px;border-radius:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;font-weight:900;font-size:15px;padding:14px 20px;border-radius:18px;corner-shape:squircle;text-decoration:none}
+.btn.main{background:var(--accent);color:#fff}
+.btn.main:hover{background:var(--accent-hi)}
+.btn.soft{background:var(--bubble);color:var(--accent)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.dock{background:#fff;border-top:1px solid var(--line);padding:14px clamp(14px,3vw,24px) calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
+.quick{display:flex;flex-wrap:wrap;gap:8px}
+.quick button{border:2px solid var(--accent);background:#fff;color:var(--accent);font-weight:800;font-size:15px;padding:10px 16px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s}
+.quick button:hover{background:var(--accent);color:#fff}
+.quick button.ghost{border-color:var(--line);color:var(--muted)}
+.quick button.ghost:hover{background:var(--bubble);color:var(--accent)}
+.inp{display:flex;gap:8px}
+.inp input{flex:1;min-width:0;border:2px solid var(--line);border-radius:18px;corner-shape:squircle;padding:13px 16px;font-weight:700;outline:0}
+.inp input:focus{border-color:var(--accent)}
+.inp button{border:0;background:var(--accent);color:#fff;width:50px;border-radius:18px;corner-shape:squircle;cursor:pointer;display:grid;place-items:center}
+.inp button svg{width:20px;height:20px}
+.foot{grid-column:1/-1;color:var(--muted);font-size:13px;text-align:center;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;font-weight:800;padding:12px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="page">
+  <aside class="profile">
+    <div class="card me">
+      <div class="ava">КГ</div>
+      <h1>Кирилл Горин</h1>
+      <p>Агент собственников помещений под ПВЗ Wildberries и Ozon</p>
+      <div class="tags"><span>удалённо</span><span>по всей России</span><span>ИП</span></div>
+    </div>
+    <div class="card">
+      <h2>Чем помогаю</h2>
+      <ul class="svc">
+        <li>Открытие фирменного ПВЗ<i>WB</i></li>
+        <li>Открытие партнёрского ПВЗ<i>WB · Ozon</i></li>
+        <li>Оценка помещения<i>бесплатно</i></li>
+        <li>Повышение аренды<i>WB · Ozon</i></li>
+        <li>Показания счётчиков<i>ежемесячно</i></li>
+        <li>Претензии и консультации<i>WB · Ozon</i></li>
+        <li>Закрытие ПВЗ<i>WB · Ozon</i></li>
+        <li>Продажа арендного бизнеса<i>с ПВЗ / под ПВЗ</i></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Написать напрямую</h2>
+      <div class="contact"><div><small>Telegram</small><b id="c1">@username</b></div><button class="mini" data-c="c1">Копировать</button></div>
+      <div class="contact"><div><small>Телефон</small><b id="c2">+7 900 000-00-00</b></div><button class="mini" data-c="c2">Копировать</button></div>
+    </div>
+  </aside>
+
+  <main class="chat">
+    <div class="chead"><span class="a">КГ</span><div><b>Кирилл · агент по ПВЗ</b><small>обычно отвечает в течение часа</small></div></div>
+    <div class="log" id="log" aria-live="polite">
+      <div class="msg in">Здравствуйте! Я Кирилл, агент собственников помещений. Договариваюсь с <b>ООО «РВБ» (Wildberries)</b>, <b>Ozon</b> и партнёрскими ИП, чтобы вам не пришлось.</div>
+      <div class="msg in">Работаю удалённо. Лично встречаемся, только если иначе никак. Расскажите, что у вас за ситуация?</div>
+    </div>
+    <div class="dock">
+      <div class="quick" id="quick"></div>
+      <form class="inp" id="inp" hidden><input id="field" autocomplete="off"><button type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+    </div>
+  </main>
+  <p class="foot">© 2026 ИП Горин Кирилл Николаевич · ИНН 000000000000 · Не являюсь представителем Wildberries или Ozon.</p>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var TG='https://t.me/username';
+  var log=document.getElementById('log'),quick=document.getElementById('quick'),inp=document.getElementById('inp'),field=document.getElementById('field');
+  var data={};
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var SIT={
+    'Пустое помещение, хочу сдать':{task:'Сдать под ПВЗ',html:'Отлично, это моя основная работа. Что сделаю:<ul><li>бесплатно проверю, подходит ли помещение</li><li>подам его Wildberries как фирменный ПВЗ</li><li>или найду ИП-партнёра WB / Ozon</li><li>сопровожу договор до подписания</li></ul><span class="price">Открытие: <span class="fill">XX%</span> месячной аренды, после подписания</span>'},
+    'ПВЗ уже работает':{task:'Действующий ПВЗ',html:'Тогда могу взять на себя:<ul><li>повышение аренды — с обоснованием, без ультиматумов</li><li>ежемесячную передачу показаний</li><li>ответы на претензии и ваши претензии</li><li>консультации по договору</li></ul><span class="price">Повышение: <span class="fill">XX%</span> от прибавки за год · счётчики от <span class="fill">X XXX ₽</span>/мес</span>'},
+    'Нужно закрыть ПВЗ':{task:'Закрыть ПВЗ',html:'Сделаем аккуратно:<ul><li>проверю сроки и условия расторжения</li><li>проведу переписку с арендатором</li><li>приму помещение по акту, сверю взаиморасчёты</li><li>по желанию найду нового арендатора</li></ul><span class="price">Закрытие: от <span class="fill">XX XXX ₽</span></span>'},
+    'Хочу продать помещение':{task:'Продать',html:'Помещение с арендатором продаётся как доход, а не как метры:<ul><li>посчитаю окупаемость</li><li>проверю договор аренды для покупателя</li><li>если ПВЗ ещё нет — покажу, что место под него подходит</li><li>найду покупателя и проведу сделку</li></ul><span class="price">Продажа: <span class="fill">X%</span> от сделки, только при успехе</span>'}
+  };
+  var FAQ={
+    'Сколько стоит?':'Оценка помещения бесплатно. Открытие ПВЗ — <span class="fill">XX%</span> месячной аренды, повышение — <span class="fill">XX%</span> от прибавки, сопровождение счётчиков от <span class="fill">X XXX ₽</span>/мес. Точную сумму называю заранее и фиксирую в договоре.',
+    'Почему не самому?':'Можно и самому. Но у арендатора типовой договор и юристы, а у вас одно помещение. Я знаю, какие пункты двигаются и какие ставки сейчас по похожим объектам. И платите вы только за результат.',
+    'А если арендатор съедет?':'Повышение идёт с обоснованием: рынок, индексация, состояние помещения. Если риск выше выгоды, я так и скажу и предложу оставить как есть.',
+    'Удалённо — надёжно?':'Маркетплейсы сами работают через личные кабинеты и ЭДО. Я работаю официально как ИП, по агентскому договору, с чеками и актами.'
+  };
+
+  function scroll(){log.scrollTop=log.scrollHeight;}
+  function add(html,who){var d=document.createElement('div');d.className='msg '+who;d.innerHTML=html;log.appendChild(d);scroll();return d;}
+  function bot(html,cb){
+    if(reduce){add(html,'in');cb&&cb();return;}
+    var t=document.createElement('div');t.className='typing';t.innerHTML='<i></i><i></i><i></i>';log.appendChild(t);scroll();
+    setTimeout(function(){t.remove();add(html,'in');cb&&cb();},650);
+  }
+  function chips(list,faq){
+    quick.innerHTML='';inp.hidden=true;
+    list.forEach(function(t){var b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=function(){pick(t);};quick.appendChild(b);});
+    if(faq)Object.keys(FAQ).forEach(function(t){var b=document.createElement('button');b.type='button';b.className='ghost';b.textContent=t;b.onclick=function(){add(t,'out');bot(FAQ[t]);};quick.appendChild(b);});
+  }
+  function ask(q,ph,key,next){
+    bot(q,function(){quick.innerHTML='';inp.hidden=false;field.placeholder=ph;field.value='';field.focus({preventScroll:true});
+      inp.onsubmit=function(e){e.preventDefault();var v=field.value.trim();if(!v)return;data[key]=v;add(v.replace(/</g,'&lt;'),'out');inp.hidden=true;next();};});
+  }
+  function pick(t){
+    add(t,'out');
+    if(SIT[t]){data.task=SIT[t].task;bot(SIT[t].html,function(){bot('Соберём заявку? Это три коротких вопроса.',function(){chips(['Да, давайте'],true);});});return;}
+    if(t==='Да, давайте'){ask('В каком городе и по какому адресу помещение?','Город, улица, дом','addr',function(){
+      ask('Какая площадь, примерно?','Например, 45 м²','area',function(){
+        ask('Как к вам обращаться и как связаться?','Имя, телефон или @ник','who',finish);});});}
+  }
+  function finish(){
+    var text='Здравствуйте, Кирилл! Заявка с сайта.\nЗадача: '+data.task+'\nАдрес: '+data.addr+'\nПлощадь: '+data.area+'\nКонтакт: '+data.who;
+    bot('Готово! Скопируйте заявку и отправьте мне в Telegram, приложите фото помещения.',function(){
+      var s=document.createElement('div');s.className='summary';
+      s.innerHTML='<pre></pre><div class="row"><button class="btn main" type="button">Скопировать и открыть Telegram</button><button class="btn soft" type="button">Начать заново</button></div>';
+      s.querySelector('pre').textContent=text;log.appendChild(s);scroll();
+      var bs=s.querySelectorAll('button');
+      bs[0].onclick=function(){copy(text,'Заявка скопирована');window.open(TG,'_blank','noopener');};
+      bs[1].onclick=function(){location.reload();};
+      chips([],true);
+    });
+  }
+  var toastEl=document.getElementById('toast');
+  function toast(t){toastEl.textContent=t;toastEl.classList.add('show');setTimeout(function(){toastEl.classList.remove('show');},1800);}
+  function copy(t,ok){try{navigator.clipboard.writeText(t).then(function(){toast(ok);},function(){toast('Не удалось скопировать');});}catch(e){toast('Не удалось скопировать');}}
+  document.querySelectorAll('.mini').forEach(function(b){b.onclick=function(){copy(document.getElementById(b.dataset.c).textContent,'Скопировано');};});
+  chips(Object.keys(SIT),true);
+})();
+</script>
+</body>
+</html>
