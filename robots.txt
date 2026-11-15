@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /versions/
+Disallow: /variants/
+Disallow: /api/
+
+Sitemap: https://asdasdasdasdasdasdaadas.github.io/rantie/sitemap.xml
