@@ -129,6 +129,47 @@ h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.025em;line-height:1.1}
   .row .info .st{display:inline}
   .card{padding:18px}
 }
+/* статистика */
+.st-per{max-width:420px;margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:#fff;border-radius:var(--r-m);corner-shape:squircle;padding:18px 20px;display:flex;flex-direction:column;gap:4px}
+.kpi span{color:var(--muted);font-size:13px;font-weight:500}
+.kpi b{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.kpi.live b{display:flex;align-items:center;gap:10px}
+.kpi.live b::before{content:"";width:9px;height:9px;border-radius:50%;background:#B4B4BA}
+.kpi.live.on b::before{background:#22975E;box-shadow:0 0 0 5px #E5F6EC}
+.card h3{margin:0;font-size:17px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.card h3 small{color:var(--muted);font-weight:500;font-size:13px}
+.chart{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:8px}
+.chart .c{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;height:100%;min-width:0;position:relative}
+.chart .bs{position:relative;flex:1;width:100%;max-width:34px}
+.chart .bs div{position:absolute;left:0;right:0;bottom:0;border-radius:7px 7px 3px 3px;min-height:3px}
+.chart .bp{background:var(--tint-2)}
+.chart .bv{background:var(--ink)}
+.chart .c.z .bs div{background:var(--tint)}
+.chart .c i{font-style:normal;font-size:11px;color:var(--muted);white-space:nowrap}
+.chart .c b{font-size:11px;font-weight:700}
+.chart .c.z b{color:#C4C4CA}
+.lg{display:flex;gap:16px;color:var(--muted);font-size:13px}
+.lg span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--ink);margin-right:6px;vertical-align:-1px}
+.lg span+span::before{background:var(--tint-2)}
+.tl{display:flex;flex-direction:column;gap:2px}
+.tl div{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line);position:relative}
+.tl div:first-child{border-top:0}
+.tl em{font-style:normal;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl em small{display:block;color:var(--muted);font-weight:500;font-size:12.5px}
+.tl b{font-size:15px}
+.tl u{position:absolute;left:0;bottom:-1px;height:2px;background:#22975E;border-radius:2px;text-decoration:none}
+.st2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.st2 .card{margin-bottom:0}
+.feed{display:flex;flex-direction:column}
+.feed div{display:grid;grid-template-columns:52px 1fr;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.feed div:first-child{border-top:0}
+.feed time{color:var(--muted);font-variant-numeric:tabular-nums}
+.feed small{color:var(--muted)}
+.empty-st{text-align:center;color:var(--muted);padding:26px 10px}
+.empty-st b{display:block;color:var(--ink);font-size:17px;margin-bottom:6px}
+@media (max-width:760px){.kpis{grid-template-columns:1fr 1fr}.st2{grid-template-columns:1fr}.st2 .card{margin-bottom:12px}.chart .c i{display:none}}
 </style>
 </head>
 <body>
@@ -157,6 +198,7 @@ h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.025em;line-height:1.1}
     <div class="nav seg" id="nav">
       <button type="button" data-v="objects" aria-pressed="true">Объекты</button>
       <button type="button" data-v="settings" aria-pressed="false">Контакты и цены</button>
+      <button type="button" data-v="stats" aria-pressed="false">Статистика</button>
     </div>
     <div id="pObjects">
       <div class="hello">
@@ -165,6 +207,16 @@ h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.025em;line-height:1.1}
       </div>
       <div class="tabs" id="tabs"></div>
       <div class="list" id="list"></div>
+    </div>
+    <div id="pStats" hidden>
+      <div class="hello"><h1>Статистика</h1><button class="btn btn-soft" type="button" id="bStR">Обновить</button></div>
+      <div class="seg st-per" id="stPer">
+        <button type="button" data-d="1" aria-pressed="false">Сегодня</button>
+        <button type="button" data-d="7" aria-pressed="true">7 дней</button>
+        <button type="button" data-d="30" aria-pressed="false">30 дней</button>
+        <button type="button" data-d="90" aria-pressed="false">90 дней</button>
+      </div>
+      <div id="stBody"></div>
     </div>
     <form id="pSettings" hidden>
       <div class="hello"><h1>Контакты</h1></div>
@@ -406,8 +458,38 @@ $('#bDel').addEventListener('click',function(){
 /* контакты */
 $('#nav').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
   $$('#nav button').forEach(function(x){x.setAttribute('aria-pressed',x===b);});
-  var st=b.dataset.v==='settings';$('#pObjects').hidden=st;$('#pSettings').hidden=!st;
+  var v=b.dataset.v,st=v==='settings';$('#pObjects').hidden=v!=='objects';$('#pSettings').hidden=!st;$('#pStats').hidden=v!=='stats';if(v==='stats')loadStats();
   if(st)api('/api/settings').then(function(r){Object.keys(r).forEach(function(k){var i=$('#pSettings [name='+k+']');if(i)i.value=r[k]||'';});});});
+/* статистика */
+var stDays=7;
+var MON=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+function plural(n,a,b,c){n=Math.abs(n)%100;var m=n%10;return n>10&&n<20?c:m>1&&m<5?b:m===1?a:c;}
+function ago(ts,now){var s=now-ts;if(s<60)return 'сейчас';if(s<3600)return Math.floor(s/60)+' мин';var d=new Date(ts*1000),t=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);return s<86400?t:d.getDate()+' '+MON[d.getMonth()];}
+function srcName(r){return !r?'Прямой заход':/yandex|ya\.ru/.test(r)?'Яндекс':/google/.test(r)?'Google':/t\.me|telegram/.test(r)?'Telegram':/vk\.com|vk\.ru/.test(r)?'ВКонтакте':/avito/.test(r)?'Авито':/whatsapp|wa\.me/.test(r)?'WhatsApp':r;}
+function tl(rows,fn){if(!rows.length)return '<div class="empty-st" style="padding:10px">Пока пусто</div>';var mx=Math.max.apply(null,rows.map(function(r){return r[r.length-1];}));
+  return '<div class="tl">'+rows.map(function(r){var n=r[r.length-1];return '<div><em>'+fn(r)+'</em><b>'+n+'</b><u style="width:'+Math.max(4,n/mx*100)+'%"></u></div>';}).join('')+'</div>';}
+function loadStats(){
+  $('#stBody').innerHTML='<div class="empty-st">Загружаю…</div>';
+  api('/api/admin/stats?d='+stDays).then(function(r){
+    var T=r.tot;
+    var k='<div class="kpis"><div class="kpi"><span>Посетители</span><b>'+T.visitors+'</b></div><div class="kpi"><span>Просмотры страниц</span><b>'+T.views+'</b></div><div class="kpi"><span>Нажатия</span><b>'+T.clicks+'</b></div><div class="kpi live'+(r.online?' on':'')+'"><span>Сейчас на сайте</span><b>'+r.online+'</b></div></div>';
+    if(!T.views&&!T.clicks){$('#stBody').innerHTML=k+'<div class="card"><div class="empty-st"><b>Пока никто не заходил</b>Как только кто-то откроет сайт или нажмёт кнопку, это появится здесь. Ваши собственные заходы не считаются, пока вы вошли в админку в этом браузере.</div></div>';return;}
+    var mx=Math.max(1,Math.max.apply(null,r.days.map(function(d){return d.p;}))),step=r.days.length>31?7:r.days.length>8?3:1;
+    var ch=r.days.length>1?'<div class="card"><h3>По дням<span class="lg"><span>посетители</span><span>просмотры</span></span></h3><div class="chart">'+r.days.map(function(d,i){var dt=d.d.split('-');
+      return '<div class="c'+(d.v?'':' z')+'" title="'+(+dt[2])+' '+MON[+dt[1]-1]+': '+d.v+' '+plural(d.v,'посетитель','посетителя','посетителей')+', '+d.p+' просм., '+d.c+' нажат.">'+(r.days.length<=31?'<b>'+(d.v||'')+'</b>':'')+'<div class="bs"><div class="bp" style="height:'+(d.p/mx*100)+'%"></div><div class="bv" style="height:'+(d.v/mx*100)+'%"></div></div><i>'+(i%step===0||i===r.days.length-1?(+dt[2])+' '+MON[+dt[1]-1]:'&nbsp;')+'</i></div>';}).join('')+'</div></div>':'';
+    var dv=r.dev.m+r.dev.d,mob=dv?Math.round(r.dev.m/dv*100):0;
+    var cl='<div class="card"><h3>Что нажимают<small>'+T.clicks+' '+plural(T.clicks,'нажатие','нажатия','нажатий')+'</small></h3>'+tl(r.clicks,function(x){return esc(x[0])+'<small>'+esc(x[1]||'')+'</small>';})+'</div>';
+    var two='<div class="st2"><div class="card"><h3>Откуда пришли</h3>'+tl(r.refs.map(function(x){return [srcName(x[0]),x[1]];}),function(x){return esc(x[0]);})+'</div>'+
+      '<div class="card"><h3>Страницы<small>'+mob+'% с телефона</small></h3>'+tl(r.pages,function(x){return esc(x[0]);})+'</div></div>';
+    var LBL={view:'открыл',click:'нажал',obj:'открыл объект'};
+    var fd='<div class="card" style="margin-top:12px"><h3>Последние действия</h3><div class="feed">'+r.recent.map(function(e){
+      var who=e.dev==='m'?'📱':'💻',what=e.ev==='view'?'Открыл страницу «'+esc(e.page)+'»'+(e.ref?' <small>из '+esc(srcName(e.ref))+'</small>':''):(LBL[e.ev]==='нажал'?'Нажал «'+esc(e.label)+'»':'Смотрит объект «'+esc(e.label)+'»')+(e.sec?' <small>· '+esc(e.sec)+'</small>':'');
+      return '<div><time>'+ago(e.ts,r.now)+'</time><span>'+who+' '+what+'</span></div>';}).join('')+'</div></div>';
+    $('#stBody').innerHTML=k+ch+cl+two+fd;
+  }).catch(function(er){$('#stBody').innerHTML='<div class="card"><div class="empty-st">'+esc(er.message)+'</div></div>';});
+}
+$('#stPer').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;stDays=+b.dataset.d;$$('#stPer button').forEach(function(x){x.setAttribute('aria-pressed',x===b);});loadStats();});
+$('#bStR').addEventListener('click',loadStats);
 $('#pSettings').addEventListener('submit',function(e){e.preventDefault();var d={};
   $$('#pSettings [name]').forEach(function(i){var v=i.value.trim();
     if(i.dataset.kind==='pct'&&/^\d+([.,]\d+)?$/.test(v))v=v.replace('.',',')+'%';

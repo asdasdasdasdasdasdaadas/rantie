@@ -6,12 +6,13 @@
 
 Пароль от админки лежит в файле admin.json (создаётся при первом запуске).
 Объекты хранятся в data/objects.json, фото — в папке uploads/.
+Статистика посещений — в data/events.jsonl (без IP и без cookies).
 Нужен только Python 3.8+, без сторонних библиотек.
 """
 import base64, csv, hashlib, hmac, json, os, re, secrets, threading, time, uuid
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(ROOT, "data")
@@ -181,6 +182,100 @@ def clean(src, old=None):
     return o
 
 
+# ---------- статистика ----------
+EVENTS = os.path.join(DATA, "events.jsonl")
+MSK = 3 * 3600                      # дни считаем по московскому времени
+BOTS = re.compile(r"bot|crawl|spider|slurp|preview|headless|lighthouse|monitor|python|curl|wget", re.I)
+track_rate = {}
+EV_KINDS = ("view", "click", "obj")
+
+
+def day_of(ts):
+    return time.strftime("%Y-%m-%d", time.gmtime(ts + MSK))
+
+
+def add_event(src, ua):
+    def s(k, n=80):
+        return re.sub(r"[\x00-\x1f<>]", "", str(src.get(k) or ""))[:n].strip()
+    ev = s("ev", 10)
+    if ev not in EV_KINDS:
+        raise ValueError("bad event")
+    vid = s("vid", 24)
+    if not re.fullmatch(r"[A-Za-z0-9]{8,24}", vid):
+        raise ValueError("bad id")
+    ref = s("ref", 120)
+    ref = urlparse(ref).netloc.lower().removeprefix("www.") if ref.startswith("http") else ""
+    e = {"ts": int(time.time()), "vid": vid, "sid": s("sid", 24), "ev": ev, "page": s("page", 60),
+         "label": s("label", 60), "sec": s("sec", 30), "ref": ref, "utm": s("utm", 40),
+         "dev": "m" if re.search(r"Mobi|Android|iPhone|iPad", ua) else "d"}
+    line = json.dumps(e, ensure_ascii=False) + "\n"
+    with lock:
+        with open(EVENTS, "a", encoding="utf-8") as f:
+            f.write(line)
+
+
+def read_events(since):
+    out = []
+    if not os.path.exists(EVENTS):
+        return out
+    with open(EVENTS, encoding="utf-8") as f:
+        for line in f:
+            try:
+                e = json.loads(line)
+            except ValueError:
+                continue
+            if e.get("ts", 0) >= since:
+                out.append(e)
+    return out
+
+
+def stats(days):
+    now = int(time.time())
+    today = day_of(now)
+    start_day = time.strftime("%Y-%m-%d", time.gmtime(now + MSK - (days - 1) * 86400))
+    since = now - (days + 1) * 86400
+    ev = [e for e in read_events(since) if day_of(e["ts"]) >= start_day]
+    names = [time.strftime("%Y-%m-%d", time.gmtime(now + MSK - i * 86400)) for i in range(days - 1, -1, -1)]
+    per = {d: {"d": d, "v": set(), "p": 0, "c": 0} for d in names}
+    pages, clicks, refs, devs, visitors, sessions_ = {}, {}, {}, {}, set(), set()
+    first = {}
+    for e in ev:
+        d = per.get(day_of(e["ts"]))
+        if d is None:
+            continue
+        d["v"].add(e["vid"])
+        visitors.add(e["vid"])
+        if e.get("sid"):
+            sessions_.add(e["sid"])
+        devs.setdefault(e["vid"], e.get("dev", "d"))
+        if e["ev"] == "view":
+            d["p"] += 1
+            pages[e["page"]] = pages.get(e["page"], 0) + 1
+            if e["sid"] not in first:
+                first[e["sid"]] = e.get("utm") or e.get("ref") or ""
+        else:
+            d["c"] += 1
+            k = (e["label"], e["sec"] if e["ev"] == "click" else "Объекты")
+            clicks[k] = clicks.get(k, 0) + 1
+    for src in first.values():
+        refs[src] = refs.get(src, 0) + 1
+    top = lambda m, n: sorted(m.items(), key=lambda x: -x[1])[:n]
+    dv = list(devs.values())
+    return {
+        "days": [{"d": x["d"], "v": len(x["v"]), "p": x["p"], "c": x["c"]} for x in per.values()],
+        "tot": {"visitors": len(visitors), "visits": len(sessions_),
+                "views": sum(x["p"] for x in per.values()), "clicks": sum(x["c"] for x in per.values())},
+        "today": {"visitors": len(per[today]["v"]) if today in per else 0},
+        "online": len({e["vid"] for e in ev if e["ts"] > now - 300}),
+        "pages": top(pages, 8),
+        "clicks": [[k[0], k[1], n] for k, n in top(clicks, 12)],
+        "refs": top(refs, 8),
+        "dev": {"m": dv.count("m"), "d": dv.count("d")},
+        "recent": [{k: e.get(k, "") for k in ("ts", "ev", "page", "label", "sec", "ref", "dev", "vid")} for e in ev[-40:][::-1]],
+        "now": now,
+    }
+
+
 # ---------- сервер ----------
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *a, **kw):
@@ -208,6 +303,11 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_header("Set-Cookie", cookie)
         self.end_headers()
         self.wfile.write(body)
+
+    def empty(self):
+        self.send_response(204)
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
 
     def body(self):
         n = int(self.headers.get("Content-Length") or 0)
@@ -248,6 +348,12 @@ class Handler(SimpleHTTPRequestHandler):
             return self.json(200, read_db())
         if path == "/api/settings":
             return self.json(200, read_settings())
+        if path == "/api/admin/stats":
+            if not self.authed():
+                return self.json(401, {"error": "Нужно войти"})
+            q = parse_qs(urlparse(self.path).query)
+            d = q.get("d", ["7"])[0]
+            return self.json(200, stats(int(d) if d in ("1", "7", "30", "90") else 7))
         if path == "/api/admin/me":
             return self.json(200, {"ok": self.authed()})
         if path == "/admin":
@@ -281,6 +387,20 @@ class Handler(SimpleHTTPRequestHandler):
                 fails[ip] = (0, time.time() + 60) if n >= 5 else (n, 0)
                 time.sleep(0.8)
                 return self.json(401, {"error": "Неверный пароль"})
+
+            if path == "/api/track":
+                n = int(self.headers.get("Content-Length") or 0)
+                ua = self.headers.get("User-Agent") or ""
+                ip = self.client_address[0]
+                cnt, t0 = track_rate.get(ip, (0, time.time()))
+                if time.time() - t0 > 60:
+                    cnt, t0 = 0, time.time()
+                track_rate[ip] = (cnt + 1, t0)
+                if n > 2048 or cnt > 120 or BOTS.search(ua) or self.authed():
+                    self.rfile.read(min(n, 2048))
+                    return self.empty()
+                add_event(json.loads(self.rfile.read(n) or b"{}"), ua)
+                return self.empty()
 
             if path == "/api/admin/logout":
                 sessions.pop(self.token(), None)

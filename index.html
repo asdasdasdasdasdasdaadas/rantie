@@ -808,6 +808,7 @@ html,body{overflow-x:clip}
 })();
 </script>
 <script src="contacts.js"></script>
+<script src="track.js" defer></script>
 <script>
 (function(){
   var box=document.getElementById('saleObj'),list=document.getElementById('saleList');
@@ -822,7 +823,7 @@ html,body{overflow-x:clip}
     A=A.slice(0,3);if(!A.length)return;
     list.innerHTML=A.map(function(o){
       var ph=o.photos&&o.photos.length?'<img src="'+esc(o.photos[0])+'" alt="" loading="lazy">':HOME;
-      return '<a class="oc" href="listings.html#o'+o.id+'"><div class="oc-ph">'+ph+'<span class="oc-t">'+(o.type==='pvz'?'С ПВЗ':'Под ПВЗ')+'</span>'+(o.status==='example'?'<span class="oc-t ex">Пример</span>':'')+'</div>'+
+      return '<a class="oc" data-ev="Объект '+mln(o.price)+'" href="listings.html#o'+o.id+'"><div class="oc-ph">'+ph+'<span class="oc-t">'+(o.type==='pvz'?'С ПВЗ':'Под ПВЗ')+'</span>'+(o.status==='example'?'<span class="oc-t ex">Пример</span>':'')+'</div>'+
         '<div class="oc-b"><b>'+mln(o.price)+'</b><small>'+(o.area?o.area+' м² · ':'')+esc([o.city,o.addr].filter(Boolean).join(', '))+'</small>'+
         (o.rent?'<i>+'+rub(o.rent)+' в месяц</i>':'')+'</div></a>';
     }).join('');

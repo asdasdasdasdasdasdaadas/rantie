@@ -490,6 +490,7 @@ function draw(){
 }
 function open(id){
   var o=OBJ.filter(function(x){return x.id==id;})[0];if(!o)return;
+  if(window.rsTrack)rsTrack('obj',(o.area?o.area+' м² · ':'')+[o.city,o.addr].filter(Boolean).join(', ')+' · №'+o.id);
   var gal=o.photos.length>1?'<div class="gal">'+o.photos.map(function(u){return '<img src="'+esc(u)+'" alt="" loading="lazy">';}).join('')+'</div>':'<div class="ph">'+pic(o)+tag(o)+badge(o).replace('class="ex','style="right:68px" class="ex')+'</div>';
   dlg.innerHTML='<div class="dl"><button class="x" type="button" aria-label="Закрыть"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>'+gal+'<div class="in">'+
    '<div><div class="pr" style="font-size:15px;color:var(--muted);font-weight:600">'+where(o)+'</div><h2>'+mln(o.price)+(o.area?' · '+o.area+' м²':'')+'</h2></div>'+
@@ -524,6 +525,7 @@ function fromCsv(){return fetch(SHEET_CSV||('objects.csv?'+Date.now()),{cache:'n
 fetch('/api/objects',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(start).catch(function(){return fromCsv();}).catch(fail);
 </script>
 <script src="contacts.js"></script>
+<script src="track.js" defer></script>
 <script src="pdf.js" defer></script>
 </body>
 </html>
