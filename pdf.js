@@ -2,7 +2,7 @@
    Контакты в PDF меняются здесь: */
 var PDF_CONTACT = {
   name: 'Кирилл Горин',
-  role: 'Агент собственников коммерческих помещений',
+  role: 'Руководитель агентства',
   tg: '@username',
   phone: '+7 900 000-00-00',
   site: ''
@@ -199,7 +199,7 @@ var PDF_CONTACT = {
       info: { title: 'Объект № ' + o.id + ' — ' + mln(o.price), author: 'РАНТЬЕ · ' + PDF_CONTACT.name },
       defaultStyle: { font: 'Roboto', fontSize: 10, color: INK },
       footer: function (cur, total) {
-        return { columns: [{ text: 'РАНТЬЕ · агент собственников', fontSize: 7.5, color: MUTED }, { text: cur + ' / ' + total, alignment: 'right', fontSize: 7.5, color: MUTED }], margin: [36, 14, 36, 0] };
+        return { columns: [{ text: 'РАНТЬЕ · агентство для собственников помещений', fontSize: 7.5, color: MUTED }, { text: cur + ' / ' + total, alignment: 'right', fontSize: 7.5, color: MUTED }], margin: [36, 14, 36, 0] };
       },
       content: content
     };

@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://asdasdasdasdasdasdaadas.github.io/rantie/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="РАНТЬЕ — сдам помещение под ПВЗ и возьму всё остальное на себя">
+<meta property="og:image:alt" content="РАНТЬЕ — сдадим помещение под ПВЗ и возьмём всё остальное на себя">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://asdasdasdasdasdasdaadas.github.io/rantie/og.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","name":"Объекты на продажу","url":"https://asdasdasdasdasdasdaadas.github.io/rantie/listings.html","isPartOf":{"@id":"https://asdasdasdasdasdasdaadas.github.io/rantie/#site"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Главная","item":"https://asdasdasdasdasdasdaadas.github.io/rantie/"},{"@type":"ListItem","position":2,"name":"Объекты на продажу","item":"https://asdasdasdasdasdasdaadas.github.io/rantie/listings.html"}]}]}</script>
@@ -385,7 +385,7 @@ dialog::backdrop{background:rgba(17,17,19,.45);backdrop-filter:blur(4px)}
 <div class="top">
   <div class="wrap">
     <div class="navbar">
-      <a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 40V9h9.5a9.5 9.5 0 0 1 0 19H16" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="37" r="4" fill="#3DBE7A"/></svg></span><span class="word">РАНТЬЕ<small>агент собственников · <span data-s="name">Кирилл Горин</span></small></span></a>
+      <a class="brand" href="index.html"><span class="mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M16 40V9h9.5a9.5 9.5 0 0 1 0 19H16" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="37" r="4" fill="#3DBE7A"/></svg></span><span class="word">РАНТЬЕ<small>агентство для собственников помещений</small></span></a>
       <nav class="links">
         <a href="index.html#services">Услуги</a>
         <a href="index.html#sale">Продажа</a>
@@ -418,7 +418,7 @@ dialog::backdrop{background:rgba(17,17,19,.45);backdrop-filter:blur(4px)}
     <div class="cards" id="cards"></div>
 
     <div class="cta">
-      <div><h3>Хотите продать своё помещение?</h3><p>Посчитаю окупаемость, подготовлю объявление и найду покупателя.</p></div>
+      <div><h3>Хотите продать своё помещение?</h3><p>Посчитаем окупаемость, подготовим объявление и найдём покупателя.</p></div>
       <a class="btn btn-white" href="index.html#contacts">Обсудить продажу</a>
     </div>
   </div>
@@ -486,7 +486,7 @@ function draw(){
     return '<button class="obj'+(o.status==='sold'?' is-sold':'')+'" type="button" data-id="'+o.id+'"><div class="ph">'+pic(o)+tag(o)+badge(o)+'</div>'+
     '<div class="ob"><div class="pr">'+mln(o.price)+'</div><div class="ad">'+(o.area?o.area+' м² · ':'')+where(o)+'</div>'+(o.floor?'<div class="sub">'+esc(o.floor)+'</div>':'')+
     '<div class="nums"><div><b>'+(o.rent?rub(o.rent):'—')+'</b><span>'+(o.type==='pvz'?'аренда в мес.':'ожид. аренда')+'</span></div><div><b>'+pay(o)+'</b><span>окупаемость</span></div><div><b>'+yld(o)+'</b><span>в год</span></div></div></div></button>';
-  }).join(''):'<div class="empty">Сейчас таких объектов нет. Напишите — расскажу о новых первым.</div>';
+  }).join(''):'<div class="empty">Сейчас таких объектов нет. Напишите — расскажем о новых первыми.</div>';
 }
 function open(id){
   var o=OBJ.filter(function(x){return x.id==id;})[0];if(!o)return;
@@ -505,7 +505,7 @@ function setF(t){cur=t;document.querySelectorAll('#lf button').forEach(function(
 cards.addEventListener('click',function(e){var b=e.target.closest('.obj');if(b)open(b.dataset.id);});
 dlg.addEventListener('click',function(e){
   var pb=e.target.closest('[data-pdf]');
-  if(pb){if(pb.disabled)return;var t=pb.innerHTML;pb.disabled=true;pb.textContent='Готовлю PDF…';
+  if(pb){if(pb.disabled)return;var t=pb.innerHTML;pb.disabled=true;pb.textContent='Готовим PDF…';
     objectPdf(curObj).catch(function(){alert('Не получилось сделать PDF. Проверьте интернет и попробуйте ещё раз.');}).then(function(){pb.disabled=false;pb.innerHTML=t;});return;}
   if(e.target===dlg||e.target.closest('.x,[data-close]'))dlg.close();});
 dlg.addEventListener('close',function(){history.replaceState(null,'',cur==='all'?location.pathname+location.search:'#'+cur);});
@@ -519,7 +519,7 @@ function start(list){
   if(h==='pvz'||h==='empty')setF(h);else draw();
   var m=h.match(/^o(\d+)$/);if(m)open(m[1]);
 }
-function fail(){cards.innerHTML='<div class="empty">Не получилось загрузить объекты. Обновите страницу или напишите мне.</div>';}
+function fail(){cards.innerHTML='<div class="empty">Не получилось загрузить объекты. Обновите страницу или напишите нам.</div>';}
 function fromCsv(){return fetch(SHEET_CSV||('objects.csv?'+Date.now()),{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(t){start(parse(t));});}
 /* Сначала берём объекты из админки (server.py). Если сайт открыт без сервера — из таблицы. */
 fetch('/api/objects',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(start).catch(function(){return fromCsv();}).catch(fail);

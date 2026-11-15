@@ -40,7 +40,7 @@ TEXT = ("city", "addr", "floor", "lease")
 NUMS = ("area", "price", "rent")
 DEFAULTS = {
     "name": "Кирилл Горин",
-    "role": "Агент собственников коммерческих помещений",
+    "role": "Руководитель агентства",
     "tg": "@username",
     "phone": "+7 900 000-00-00",
     "email": "mail@example.ru",
