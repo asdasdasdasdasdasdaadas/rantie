@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Сайт РАНТЬЕ + админка объектов.
+"""Сайт Rent Line + админка объектов.
 
 Запуск:  python3 server.py            (порт 8080)
          PORT=80 python3 server.py

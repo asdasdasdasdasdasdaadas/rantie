@@ -59,12 +59,12 @@ var PDF_CONTACT = {
     try { return c.toDataURL('image/jpeg', .9); } catch (e) { return photo(null, w, h, r); }
   }
   function logo() {
-    var a = cnv(150, 30), c = a[0], x = a[1];
+    var a = cnv(170, 30), c = a[0], x = a[1];
     rr(x, 0, 0, 30, 30, 9); x.fillStyle = INK; x.fill();
     x.save(); x.translate(4.5, 4.5); x.scale(21 / 48, 21 / 48); x.strokeStyle = '#fff'; x.lineWidth = 5.5; x.lineCap = 'round'; x.lineJoin = 'round';
-    x.stroke(new Path2D('M16 40V9h9.5a9.5 9.5 0 0 1 0 19H16')); x.beginPath(); x.arc(34, 37, 4, 0, Math.PI * 2); x.fillStyle = '#3DBE7A'; x.fill(); x.restore(); x.textBaseline = 'middle';
+    x.stroke(new Path2D('M16 34V8h9.5a8.5 8.5 0 0 1 0 17H16M25 25l7 9')); x.strokeStyle = '#3DBE7A'; x.lineWidth = 4.5; x.stroke(new Path2D('M12 41.5h24')); x.restore(); x.textBaseline = 'middle';
     x.fillStyle = INK; x.font = font(800, 13); x.textAlign = 'left';
-    var t = 'РАНТЬЕ', X = 42; for (var i = 0; i < t.length; i++) { x.fillText(t[i], X, 16); X += x.measureText(t[i]).width + 3.2; }
+    var t = 'RENT LINE', X = 42; for (var i = 0; i < t.length; i++) { x.fillText(t[i], X, 16); X += x.measureText(t[i]).width + 3.2; }
     return c.toDataURL('image/png');
   }
   // строка «таблеток»: [{t, bg, fg, parts:[{t,c}]}]
@@ -108,7 +108,7 @@ var PDF_CONTACT = {
     var content = [];
     // шапка
     content.push({ columns: [
-      { image: logo(), width: 150, height: 30 },
+      { image: logo(), width: 170, height: 30 },
       { width: '*', alignment: 'right', stack: [
         { text: 'Презентация объекта', fontSize: 9, bold: true, color: INK },
         { text: '№ ' + o.id + ' · ' + new Date().toLocaleDateString('ru-RU'), fontSize: 8.5, color: MUTED, margin: [0, 2, 0, 0] }
@@ -196,10 +196,10 @@ var PDF_CONTACT = {
 
     return {
       pageSize: 'A4', pageMargins: [36, 34, 36, 44],
-      info: { title: 'Объект № ' + o.id + ' — ' + mln(o.price), author: 'РАНТЬЕ · ' + PDF_CONTACT.name },
+      info: { title: 'Объект № ' + o.id + ' — ' + mln(o.price), author: 'Rent Line · ' + PDF_CONTACT.name },
       defaultStyle: { font: 'Roboto', fontSize: 10, color: INK },
       footer: function (cur, total) {
-        return { columns: [{ text: 'РАНТЬЕ · агентство для собственников помещений', fontSize: 7.5, color: MUTED }, { text: cur + ' / ' + total, alignment: 'right', fontSize: 7.5, color: MUTED }], margin: [36, 14, 36, 0] };
+        return { columns: [{ text: 'Rent Line · агентство для собственников помещений', fontSize: 7.5, color: MUTED }, { text: cur + ' / ' + total, alignment: 'right', fontSize: 7.5, color: MUTED }], margin: [36, 14, 36, 0] };
       },
       content: content
     };
